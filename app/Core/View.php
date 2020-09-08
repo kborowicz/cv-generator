@@ -68,7 +68,7 @@ class View {
             throw new \Exception("File '$path'  does not exist");
         }
 
-        return $path . '?' . rand();
+        return PUBLIC__RELATIVE_DIR . $name . '?' . rand();
     }
 
     public function route(string $name, $params = []) {

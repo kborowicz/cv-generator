@@ -17,7 +17,8 @@ class AuthController extends Controller {
 
     public function login() {
         $view = new View('login.phtml', [
-            'topnavBg' => '#343a40',
+            'pageTitle' => 'CV Generator | Login',
+            'topnavBg'  => '#343a40',
         ]);
 
         $view->render();

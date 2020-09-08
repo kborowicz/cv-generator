@@ -16,9 +16,9 @@ class User {
     protected $id;
 
     /**
-     * @Column(type="string", nullable=false, unique=true)
+     * @Column(type="string", nullable=false)
      */
-    protected $login;
+    protected $email;
 
     /**
      * @Column(type="string", nullable=false)

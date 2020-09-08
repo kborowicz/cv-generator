@@ -1,51 +1,7 @@
-// ---- Global variables ---- //
-
-$base-palette: (
-    light: #cacbce,
-    lighter: #eff0f3,
-    lightest: #fff,
-    light1: #e0e1e5,
-    dark: #343a40,
-    darker: #212529,
-    accent: #f58013
-);
-
-@function palette($color){
-    @if map-has-key($base-palette, $color){
-        @return map-get($base-palette, $color);
-    } @else {
-        @error "unknown color `#{$color}`";
-        @return null;
-    }
-}
-
-$base-font-size1: 14.5px;
-$base-font-size2: 13px;
-
-$base-margin0: 5px;
-$base-margin1: 8px;
-$base-margin2: 10px;
-$base-margin3: 12px;
-
-$topnav-height: 46px;
-$sidenav-width-hidden: $topnav-height;
-$sidenav-width-expanded: 230px;
-$sidenav-transition: .3s ease-in-out;
-$sidenav-padding: 14px;
-$nav-icon-size: 18px;
-
-
-/* Color palette */
-
+/* --- Color palette --- */
 $color-background: #eff0f3;
 $color-surface: #ffffff;
 $color-primary: #343a40;
 $color-prmary-variant: #212529;
 $color-secondary: #f58013;
-$color-separator: #e0e1e5;
 $color-error: #b00020;
-
-$color-on-background: #aaa;
-$color-on-surface: grey;
-$color-on-primary: #cacbce;
-$color-on-error: #fff;

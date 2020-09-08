@@ -22,8 +22,9 @@ abstract class BaseController extends Controller {
             $this->user = $usersRepo->find($_SESSION[USER_ID]);
 
             $this->view = new View('base.phtml', [
-                'topnavBg' => '#343a40',
-                'user'     => $this->user,
+                'pageTitle' => 'CV Generator',
+                'topnavBg'  => '#343a40',
+                'user'      => $this->user,
             ]);
         } else {
             $this->redirectTo('login');

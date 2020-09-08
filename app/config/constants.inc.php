@@ -4,6 +4,7 @@
 define('ROOT_DIR', dirname(dirname(__DIR__)) . '/');
 define('FILES_DIR', ROOT_DIR . 'user_files/');
 define('PUBLIC_DIR', ROOT_DIR . 'public/');
+define('PUBLIC__RELATIVE_DIR', '/cv-generator/public/');
 define('RESOURCES_DIR', ROOT_DIR . 'resources/');
 define('TMP_DIR', ROOT_DIR . 'tmp/');
 define('TEMPLATES_DIR', RESOURCES_DIR . 'templates/');

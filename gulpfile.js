@@ -27,8 +27,6 @@ gulp.task('js', function() {
         .pipe(gulp.dest('public/js'));
 });
 
-const pages = fs.readdirSync('./resources/js/tasks');
-
 gulp.task('rollup', function() {
     return gulp.src('resources/js/**/*.js')
         .pipe(sourcemaps.init())
