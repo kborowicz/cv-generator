@@ -1,0 +1,105 @@
+$modals: (
+    'sm': 300px,
+    'md': 500px,
+    'lg': 800px
+);
+
+.modal-container {
+    @include stretch;
+    @include flex(center);
+
+    position: fixed;
+    padding: $base-margin1;
+    background: rgba(0, 0, 0, 0.3);
+
+    @include respond-to("md") {
+        padding: $base-margin3;
+        // background: radial-gradient(
+        //     circle at center center, 
+        //     rgba(0, 0, 0, 0.1) 0px, 
+        //     rgba(0, 0, 0, 0.8) 100%
+        // );
+    }
+}
+
+.modal {
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 50px;
+    width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 5px;
+
+    &__header {
+        flex: none;
+        //border-bottom: 1px solid palette('light');
+        height: $topnav-height;
+        background-color: #ececec;
+        @include flex(center, space-between);
+
+        .title {
+            flex: 1;
+            font-weight: 500;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .close {
+            width: $topnav-height;
+            flex: none;
+            cursor: pointer;
+            font-size: 22px;
+            position: absolute;
+            right: 0;
+        }
+    }
+
+    &__body {
+        flex: auto;
+        padding: 0 $base-margin2;
+        margin-top: $base-margin2;
+        overflow: auto;
+        max-height: 100%;
+
+        .group {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: justify;
+
+            .header {
+                color: palette('accent');
+                margin-bottom: $base-margin1;
+                font-weight: 500;
+            }
+
+            &:first-of-type {
+                margin-top: 0;
+            }
+        }
+
+    }
+
+    &__footer {
+        background-color:inherit;
+        padding: $base-margin2;
+        @include flex(center, flex-end);
+
+        .btn {
+            margin-right: $base-margin2;
+        }
+
+        > .btn:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+@each $type, $width in $modals {
+    .modal[data-modal-size="#{$type}"] {
+        @include respond-to("md") {
+            width: $width;
+        }
+    }
+}

@@ -1,0 +1,40 @@
+#content {
+    position: relative;
+    z-index: 0;
+    top: $topnav-height;
+    right: 0;
+    left: 0;
+
+    margin-left: 0;
+    transition: margin-left $sidenav-transition;
+    height: calc(100% - #{$topnav-height});
+
+    @include respond-to('md') {
+        margin-left: $sidenav-width-expanded;
+
+        .sidenav-toggled & {
+            margin-left: $sidenav-width-hidden;
+        }
+    }
+
+    #base-container {
+        width: 100%;
+        height: 100%;
+        background-color: palette('lightest');
+        border: 1px solid palette('light1');
+        border-radius: $base-margin1;
+        padding: 0 $base-margin2 $base-margin2 $base-margin2;
+
+        #header {
+            display: flex;
+            align-items: center;
+            height: $topnav-height;
+            border-bottom: 1px solid palette('light1');
+            margin-bottom: $base-margin2;
+            font-size: 20px;
+            font-weight: 300;
+            color: darken(palette('light1'), 25%);
+        }
+
+    }
+}

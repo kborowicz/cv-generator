@@ -1,0 +1,19 @@
+{
+    "name": "vendor/globkart",
+    "description": "Simple task manager",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Grubix",
+            "email": "krystian.borowicz@student.put.poznan.pl"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "doctrine/orm": "*"
+    }
+}

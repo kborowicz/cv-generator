@@ -1,0 +1,41 @@
+{
+  "name": "cv-generator",
+  "version": "1.0.0",
+  "description": "```sql\r /* PROJEKTY */",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grubix/cv-generator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Grubix/cv-generator/issues"
+  },
+  "homepage": "https://github.com/Grubix/cv-generator#readme",
+  "devDependencies": {
+    "del": "^5.1.0",
+    "eslint": "^7.6.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "folder-hash": "^3.3.2",
+    "fs": "0.0.1-security",
+    "gulp": "^4.0.2",
+    "gulp-csso": "^4.0.1",
+    "gulp-hash": "^4.2.2",
+    "gulp-iconfont": "^10.0.3",
+    "gulp-iconfont-css": "^3.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-rollup": "^2.17.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-terser": "^1.2.0",
+    "node-sass": "^4.14.1"
+  }
+}

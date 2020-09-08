@@ -1,0 +1,24 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "globals": {
+        "app": "readonly",
+        "kdom": "readonly",
+        "anime": "readonly"
+    },
+    "rules": {
+        "space-before-function-paren": ["error", "never"],
+        "semi": ["error", "always"],
+        "indent": ["error", 4],
+        "eqeqeq": "off"
+    }
+}

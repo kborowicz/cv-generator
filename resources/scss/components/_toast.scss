@@ -1,0 +1,131 @@
+@import "base/variables";
+@import "base/breakpoints";
+@import "base/mixins";
+
+$toasts: (
+    // [type] : ([bg_color], [font_color])
+    
+    "info": (#56c0e0, black),
+    "success": (#52A76A, black),
+    "warning": (#f7af3e, black),
+    "error": (#db524b, black),
+    "option": (#eee, black),
+);
+
+.toast-stack {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: $base-margin1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    //background-color:pink;
+
+    @include respond-to("sm") {
+        align-items: center;
+    }
+
+    @include respond-to("md") {
+        left: auto;
+        max-width: 100%;
+        min-width: $sidenav-width-expanded;
+        padding: $base-margin3;
+        //align-items: stretch; //TODO do zastanowienia
+        align-items: flex-end;
+    }
+}
+
+.toast {
+    position: relative;
+    width: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    margin-bottom: $base-margin1;
+    box-shadow: 0 0 8px rgba(52, 58, 64, 0.4);
+
+    @include respond-to("md") {
+        margin-bottom: $base-margin3;
+        max-width: 350px;
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    .toast-content {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+        padding: .5rem 0 .5rem 0;
+
+        .toast-type {
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: .75rem;
+            font-size: 25px;
+        }
+
+        .toast-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: justify;
+            padding-left: .75rem;
+            padding-right: .75rem;
+        }
+
+        .toast-close {
+            flex: none;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-right: .75rem;
+            font-size: 20px;
+
+            .toast-close-icon {
+                cursor: pointer;
+                transition: transform .1s ease-in-out;
+
+                &:hover {
+                    transform: scale(1.3);
+                }
+            }
+        }
+    }
+
+    .toast-progress {
+        flex: none;
+        width: 100%;
+        height: 5px;
+    }
+}
+
+@each $type, $colors in $toasts {
+    .toast[data-toast-type="#{$type}"] {
+        background-color: nth($colors, 1);
+
+        .toast-content {
+            background-color: nth($colors, 1);
+
+            .toast-type {
+                color: darken(nth($colors, 1), 25%);
+            }
+
+            .toast-text {
+                color: nth($colors, 2);
+            }
+        }
+
+        .toast-progress {
+            background-color: darken(nth($colors, 1), 15%);
+        }
+    }
+}
