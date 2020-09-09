@@ -2,10 +2,6 @@
 @import "base/breakpoints";
 @import "base/mixins";
 
-@import "components/modal";
-@import "components/toast";
-@import "components/forms";
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
 
 *,
@@ -23,6 +19,7 @@ body {
     background-color: $color-background;
     overflow-x: hidden;
     margin: 0;
+    font-size: 14px;
 }
 
 ul {
@@ -36,7 +33,16 @@ a {
     color: inherit;
 }
 
+button,
 button:active,
 button:focus {
     outline: none;
 }
+
+// @import "components/modal";
+// @import "components/toast";
+@import "components/forms";
+
+@import "pages/login";
+@import "pages/home";
+

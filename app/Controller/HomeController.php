@@ -7,7 +7,7 @@ use App\Core\View;
 use App\Core\Controller;
 use App\Model\Entity\User;
 
-abstract class BaseController extends Controller {
+class HomeController extends Controller {
 
     protected User $user;
 
@@ -21,8 +21,8 @@ abstract class BaseController extends Controller {
             $usersRepo = $entityManager->getRepository(User::class);
             $this->user = $usersRepo->find($_SESSION[USER_ID]);
 
-            $this->view = new View('base.phtml', [
-                'pageTitle' => 'CV Generator',
+            $this->view = new View('home.phtml', [
+                'pageTitle' => 'CV Generator | ' . $this->user->getFullName(),
                 'topnavBg'  => '#343a40',
                 'user'      => $this->user,
             ]);
@@ -31,7 +31,7 @@ abstract class BaseController extends Controller {
         }
     }
 
-    public function base() {
+    public function home() {
         $this->view->render();
     }
 

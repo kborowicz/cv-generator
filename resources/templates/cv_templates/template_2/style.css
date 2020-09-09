@@ -1,0 +1,129 @@
+@font-face {
+    font-family: "regular";
+    src: url("lib/fonts/Lato-Regular.ttf");
+}
+
+@font-face {
+    font-family: "bold";
+    src: url("lib/fonts/Lato-Bold.ttf");
+}
+
+@font-face {
+    font-family: "bold-italic";
+    src: url("lib/fonts/Lato-BoldItalic.ttf");
+}
+
+@font-face {
+    font-family: "italic";
+    src: url("lib/fonts/Lato-Italic.ttf");
+}
+
+@font-face {
+    font-family: "light-italic";
+    src: url("lib/fonts/Lato-LightItalic.ttf");
+}
+
+@font-face {
+    font-family: "black";
+    src: url("lib/fonts/Lato-Black.ttf");
+}
+
+@font-face {
+    font-family: "light";
+    src: url("lib/fonts/Lato-Light.ttf");
+}
+
+@page {
+    margin: 0px 0px 0px 0px !important;
+    padding: 0px 0px 0px 0px !important;
+}
+
+body {
+    font-family: "regular";
+}
+
+.f-r {
+    font-family: "regular"
+}
+
+.f-b {
+    font-family: "bold"
+}
+
+.f-b {
+    font-family: "black"
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+#left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: ' .$leftWidth. 'px;
+    background-color: #094b41;
+    color: #fff;
+}
+
+#right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: ' .$leftWidth. 'px;
+}
+
+#left .info-header {
+    font-family: "bold";
+    font-size: 14px;
+}
+
+#left .info {
+    font-family: "light";
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style: none;
+}
+
+.skill-tick {
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 6px;
+    vertical-align: top;
+}
+
+.skill-tick img {
+    width: 12px; 
+}
+
+.skill {
+    width: 100%;
+    font-size: 12px;
+    padding-right: 10px;
+    vertical-align: top;
+    padding-bottom: 10px;
+}
+
+#right {
+    padding: 0 20px 20px 20px;
+    text-align: justify;
+}
+
+.name {
+    font-family: "bold";
+    font-size: 35px;
+}
+
+.date {
+    text-align: left; 
+    font-size: 13px; 
+    color: grey; 
+    font-family: "regular";
+}

@@ -1,6 +1,30 @@
-
 <?php $this->include('head.phtml') ?>
 <body>
-    
+    <div class="login__wrapper">
+        <div class="login__container">
+            <form action="<?=$this->route('login')?>" method="post">
+                <?=$this->csrf()?>
+                <div class="login__row">
+                    <input type="text" name="email" placeholder="Email" class="form-control form-control--text"
+                        value="<?= $this->isset('email') ? $this->email : ''?>">
+
+                    <?php if($this->isset('emailError')) : ?>
+                        <span class="error"><?=$this->emailError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row">
+                    <input type="password" name="password" placeholder="Password" class="form-control form-control--text">
+                    <?php if($this->isset('passwordError')) : ?>
+                        <span class="error"><?=$this->passwordError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row login__row--submit">
+                    <button type="button" class="btn btn--light" 
+                        onclick="document.location.href='<?=$this->route('signup')?>'">sign up</button>
+                    <button type="submit" class="btn">log in</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

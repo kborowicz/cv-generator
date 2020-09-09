@@ -1,0 +1,47 @@
+@import "base/variables";
+@import "base/breakpoints";
+@import "base/mixins";
+
+.login {
+    &__wrapper {
+        width: 100%;
+        height: 100%;
+        @include flex;
+    }
+
+    &__container {
+        width: 400px;
+        border-radius: 8px;
+        padding: 30px;
+        background-color: $color-surface;
+        box-shadow: 10px 10px 40px rgba(125, 139, 153, 0.2);
+    }
+
+    &__row {
+        margin-top: 15px;
+
+        &:first-of-type {
+            margin-top: 0;
+        }
+
+        &--submit {
+            display: flex;
+            justify-content: flex-end;
+
+            > * {
+                margin-right: 15px;
+
+                &:last-of-type {
+                    margin-right: 0;
+                }
+            }
+        }
+
+        .error {
+            font-size: 12px;
+            font-weight: 500;
+            color: $color-error;
+            padding-left: 10px;
+        }
+    }
+}

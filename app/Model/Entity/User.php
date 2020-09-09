@@ -85,4 +85,8 @@ class User {
      */
     protected $educationHistory;
 
+    public function getFullName() {
+        return $this->name . ' ' . $this->lastname;
+    }
+
 }

@@ -1,0 +1,53 @@
+
+<?php $this->include('head.phtml') ?>
+<body>
+    <div class="login__wrapper">
+        <div class="login__container">
+            <form action="<?=$this->route('signup')?>" method="post">
+                <?=$this->csrf()?>
+                <div class="login__row">
+                    <input type="text" name="name" placeholder="Name" class="form-control form-control--text"
+                        value="<?= $this->isset('name') ? $this->name : ''?>">
+                    <?php if($this->isset('nameError')) : ?>
+                        <span class="error"><?=$this->nameError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row">
+                    <input type="text" name="lastname" placeholder="Lastname" class="form-control form-control--text"
+                        value="<?= $this->isset('lastname') ? $this->lastname : ''?>">
+                    <?php if($this->isset('lastnameError')) : ?>
+                        <span class="error"><?=$this->lastnameError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row">
+                    <input type="text" name="email" placeholder="Email" class="form-control form-control--text"
+                        value="<?= $this->isset('email') ? $this->email : ''?>">
+
+                    <?php if($this->isset('emailError')) : ?>
+                        <span class="error"><?=$this->emailError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row">
+                    <input type="password" name="password" placeholder="Password" class="form-control form-control--text">
+
+                    <?php if($this->isset('passwordError')) : ?>
+                        <span class="error"><?=$this->passwordError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row">
+                    <input type="password" name="password-confirm" placeholder="Confirm password" class="form-control form-control--text">
+
+                    <?php if($this->isset('passwordConfirmError')) : ?>
+                        <span class="error"><?=$this->passwordConfirmError?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="login__row login__row--submit">
+                <button type="button" class="btn btn--light" 
+                        onclick="document.location.href='<?=$this->route('login')?>'">log in</button>
+                    <button type="submit" class="btn">sign up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

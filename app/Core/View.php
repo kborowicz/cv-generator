@@ -65,7 +65,7 @@ class View {
         $path = PUBLIC_DIR . $name;
 
         if(!file_exists($path)) {
-            throw new \Exception("File '$path'  does not exist");
+            return '{File not exists}';
         }
 
         return PUBLIC__RELATIVE_DIR . $name . '?' . rand();

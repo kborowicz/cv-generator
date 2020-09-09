@@ -133,7 +133,7 @@ class Route {
 
         //TODO potem zmienic ten prefix na poprostu roota /
         if($this->matches($url)) {
-            return '/tasks-rev/' . ltrim($url, '/');
+            return '/cv-generator/' . ltrim($url, '/');
         } else {
             throw new \Exception("Specified parameters do not match route pattern ($url)");
         }
