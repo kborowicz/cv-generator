@@ -61,7 +61,7 @@ class User {
     protected $adress_Town;
 
     /**
-     * @Column(type="string", nullable=true)
+     * @Column(type="string")
      */
     protected $imageUrl;
 
@@ -92,7 +92,9 @@ class User {
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
+        $this->files = new \Doctrine\Common\Collections\ArrayCollection();
         $this->skills = new \Doctrine\Common\Collections\ArrayCollection();
         $this->interests = new \Doctrine\Common\Collections\ArrayCollection();
         $this->employmentHistory = new \Doctrine\Common\Collections\ArrayCollection();
@@ -104,7 +106,8 @@ class User {
      *
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -115,7 +118,8 @@ class User {
      *
      * @return User
      */
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
 
         return $this;
@@ -126,7 +130,8 @@ class User {
      *
      * @return string
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
@@ -137,7 +142,8 @@ class User {
      *
      * @return User
      */
-    public function setPassword($password) {
+    public function setPassword($password)
+    {
         $this->password = $password;
 
         return $this;
@@ -148,7 +154,8 @@ class User {
      *
      * @return string
      */
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
@@ -159,7 +166,8 @@ class User {
      *
      * @return User
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -170,7 +178,8 @@ class User {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -181,7 +190,8 @@ class User {
      *
      * @return User
      */
-    public function setLastname($lastname) {
+    public function setLastname($lastname)
+    {
         $this->lastname = $lastname;
 
         return $this;
@@ -192,7 +202,8 @@ class User {
      *
      * @return string
      */
-    public function getLastname() {
+    public function getLastname()
+    {
         return $this->lastname;
     }
 
@@ -203,7 +214,8 @@ class User {
      *
      * @return User
      */
-    public function setBirthDate($birthDate) {
+    public function setBirthDate($birthDate)
+    {
         $this->birthDate = $birthDate;
 
         return $this;
@@ -214,7 +226,8 @@ class User {
      *
      * @return \DateTime
      */
-    public function getBirthDate() {
+    public function getBirthDate()
+    {
         return $this->birthDate;
     }
 
@@ -225,7 +238,8 @@ class User {
      *
      * @return User
      */
-    public function setAdressStreet($adressStreet) {
+    public function setAdressStreet($adressStreet)
+    {
         $this->adress_street = $adressStreet;
 
         return $this;
@@ -236,7 +250,8 @@ class User {
      *
      * @return string
      */
-    public function getAdressStreet() {
+    public function getAdressStreet()
+    {
         return $this->adress_street;
     }
 
@@ -247,7 +262,8 @@ class User {
      *
      * @return User
      */
-    public function setAdressHouseNumber($adressHouseNumber) {
+    public function setAdressHouseNumber($adressHouseNumber)
+    {
         $this->adress_houseNumber = $adressHouseNumber;
 
         return $this;
@@ -258,7 +274,8 @@ class User {
      *
      * @return string
      */
-    public function getAdressHouseNumber() {
+    public function getAdressHouseNumber()
+    {
         return $this->adress_houseNumber;
     }
 
@@ -269,7 +286,8 @@ class User {
      *
      * @return User
      */
-    public function setAdressZipCode($adressZipCode) {
+    public function setAdressZipCode($adressZipCode)
+    {
         $this->adress_zipCode = $adressZipCode;
 
         return $this;
@@ -280,7 +298,8 @@ class User {
      *
      * @return string
      */
-    public function getAdressZipCode() {
+    public function getAdressZipCode()
+    {
         return $this->adress_zipCode;
     }
 
@@ -291,7 +310,8 @@ class User {
      *
      * @return User
      */
-    public function setAdressTown($adressTown) {
+    public function setAdressTown($adressTown)
+    {
         $this->adress_Town = $adressTown;
 
         return $this;
@@ -302,7 +322,8 @@ class User {
      *
      * @return string
      */
-    public function getAdressTown() {
+    public function getAdressTown()
+    {
         return $this->adress_Town;
     }
 
@@ -313,7 +334,8 @@ class User {
      *
      * @return User
      */
-    public function addFile(\App\Model\Entity\File $file) {
+    public function addFile(\App\Model\Entity\File $file)
+    {
         $this->files[] = $file;
 
         return $this;
@@ -326,7 +348,8 @@ class User {
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeFile(\App\Model\Entity\File $file) {
+    public function removeFile(\App\Model\Entity\File $file)
+    {
         return $this->files->removeElement($file);
     }
 
@@ -335,7 +358,8 @@ class User {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getFiles() {
+    public function getFiles()
+    {
         return $this->files;
     }
 
@@ -346,7 +370,8 @@ class User {
      *
      * @return User
      */
-    public function addSkill(\App\Model\Entity\Skills $skill) {
+    public function addSkill(\App\Model\Entity\Skills $skill)
+    {
         $this->skills[] = $skill;
 
         return $this;
@@ -359,7 +384,8 @@ class User {
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSkill(\App\Model\Entity\Skills $skill) {
+    public function removeSkill(\App\Model\Entity\Skills $skill)
+    {
         return $this->skills->removeElement($skill);
     }
 
@@ -368,7 +394,8 @@ class User {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSkills() {
+    public function getSkills()
+    {
         return $this->skills;
     }
 
@@ -379,7 +406,8 @@ class User {
      *
      * @return User
      */
-    public function addInterest(\App\Model\Entity\Interests $interest) {
+    public function addInterest(\App\Model\Entity\Interests $interest)
+    {
         $this->interests[] = $interest;
 
         return $this;
@@ -392,7 +420,8 @@ class User {
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeInterest(\App\Model\Entity\Interests $interest) {
+    public function removeInterest(\App\Model\Entity\Interests $interest)
+    {
         return $this->interests->removeElement($interest);
     }
 
@@ -401,7 +430,8 @@ class User {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getInterests() {
+    public function getInterests()
+    {
         return $this->interests;
     }
 
@@ -412,7 +442,8 @@ class User {
      *
      * @return User
      */
-    public function addEmploymentHistory(\App\Model\Entity\EmploymentHistory $employmentHistory) {
+    public function addEmploymentHistory(\App\Model\Entity\EmploymentHistory $employmentHistory)
+    {
         $this->employmentHistory[] = $employmentHistory;
 
         return $this;
@@ -425,7 +456,8 @@ class User {
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeEmploymentHistory(\App\Model\Entity\EmploymentHistory $employmentHistory) {
+    public function removeEmploymentHistory(\App\Model\Entity\EmploymentHistory $employmentHistory)
+    {
         return $this->employmentHistory->removeElement($employmentHistory);
     }
 
@@ -434,7 +466,8 @@ class User {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getEmploymentHistory() {
+    public function getEmploymentHistory()
+    {
         return $this->employmentHistory;
     }
 
@@ -445,7 +478,8 @@ class User {
      *
      * @return User
      */
-    public function addEducationHistory(\App\Model\Entity\EducationHistory $educationHistory) {
+    public function addEducationHistory(\App\Model\Entity\EducationHistory $educationHistory)
+    {
         $this->educationHistory[] = $educationHistory;
 
         return $this;
@@ -458,7 +492,8 @@ class User {
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeEducationHistory(\App\Model\Entity\EducationHistory $educationHistory) {
+    public function removeEducationHistory(\App\Model\Entity\EducationHistory $educationHistory)
+    {
         return $this->educationHistory->removeElement($educationHistory);
     }
 
@@ -467,29 +502,8 @@ class User {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getEducationHistory() {
+    public function getEducationHistory()
+    {
         return $this->educationHistory;
-    }
-
-    /**
-     * Set imageUrl.
-     *
-     * @param string $imageUrl
-     *
-     * @return User
-     */
-    public function setImageUrl($imageUrl) {
-        $this->imageUrl = $imageUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get imageUrl.
-     *
-     * @return string
-     */
-    public function getImageUrl() {
-        return $this->imageUrl;
     }
 }

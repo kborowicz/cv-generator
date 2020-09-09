@@ -5,18 +5,21 @@ namespace App\Controller;
 use App\Core\View;
 use App\Core\Controller;
 use App\Model\Entity\User;
+use Doctrine\ORM\ORMException;
 
 class AuthController extends Controller {
 
     public function before($action): void {
         session_start();
 
-        if (isset($_SESSION[USER_ID])) {
-            $this->redirectTo('base');
-        }
-
-        if (!isset($_SESSION[CSRF_TOKEN])) {
-            $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
+        if($action !== 'logout') {
+            if (isset($_SESSION[USER_ID])) {
+                $this->redirectTo('home');
+            }
+    
+            if (!isset($_SESSION[CSRF_TOKEN])) {
+                $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
+            }
         }
     }
 
@@ -26,7 +29,7 @@ class AuthController extends Controller {
             'topnavBg'  => '#343a40',
         ]);
 
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $this->actionLogin();
         } else {
             $this->view->render();
@@ -34,7 +37,7 @@ class AuthController extends Controller {
     }
 
     public function actionLogin() {
-        if(empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
+        if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
             $this->redirectTo('login');
         }
 
@@ -62,7 +65,7 @@ class AuthController extends Controller {
         $usersRepo = $em->getRepository(User::class);
         $user = $usersRepo->findOneBy(['email' => $_POST['email']]);
 
-        if(!$user) {
+        if (!$user) {
             $this->view->render([
                 'email'      => $_POST['email'],
                 'emailError' => 'Email does not exist',
@@ -71,9 +74,9 @@ class AuthController extends Controller {
             return;
         }
 
-        if(!password_verify($_POST['password'], $user->getPassword())) {
+        if (!password_verify($_POST['password'], $user->getPassword())) {
             $this->view->render([
-                'email'      => $_POST['email'],
+                'email'         => $_POST['email'],
                 'passwordError' => 'Incorrect password',
             ]);
 
@@ -92,7 +95,7 @@ class AuthController extends Controller {
             'topnavBg'  => '#343a40',
         ]);
 
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $this->actionSignup();
         } else {
             $this->view->render();
@@ -100,57 +103,57 @@ class AuthController extends Controller {
     }
 
     public function actionSignup() {
-        if(empty($_POST['name'])) {
+        if (empty($_POST['name'])) {
             $this->view->render(['nameError' => 'Name is required']);
 
             return;
-        } else if(empty($_POST['lastname'])) {
+        } else if (empty($_POST['lastname'])) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastnameError' => 'Lastname is required'
+                'name'          => $_POST['name'],
+                'lastnameError' => 'Lastname is required',
             ]);
 
             return;
-        } else if(empty($_POST['email'])) {
+        } else if (empty($_POST['email'])) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastname' => $_POST['lastname'],
-                'emailError' => 'Email is required'
+                'name'       => $_POST['name'],
+                'lastname'   => $_POST['lastname'],
+                'emailError' => 'Email is required',
             ]);
 
             return;
-        } else if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        } else if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastname' => $_POST['lastname'],
-                'emailError' => 'Email is invalid'
+                'name'       => $_POST['name'],
+                'lastname'   => $_POST['lastname'],
+                'emailError' => 'Email is invalid',
             ]);
 
             return;
-        } else if(empty($_POST['password'])) {
+        } else if (empty($_POST['password'])) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastname' => $_POST['lastname'],
-                'email' => $_POST['email'],
-                'passwordError' => 'Password is required'
+                'name'          => $_POST['name'],
+                'lastname'      => $_POST['lastname'],
+                'email'         => $_POST['email'],
+                'passwordError' => 'Password is required',
             ]);
 
             return;
-        } else if(empty($_POST['password-confirm'])) {
+        } else if (empty($_POST['password-confirm'])) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastname' => $_POST['lastname'],
-                'email' => $_POST['email'],
-                'passwordConfirmError' => 'Password confirmation is required'
+                'name'                 => $_POST['name'],
+                'lastname'             => $_POST['lastname'],
+                'email'                => $_POST['email'],
+                'passwordConfirmError' => 'Password confirmation is required',
             ]);
 
             return;
-        } else if($_POST['password'] !== $_POST['password-confirm']) {
+        } else if ($_POST['password'] !== $_POST['password-confirm']) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastname' => $_POST['lastname'],
-                'email' => $_POST['email'],
-                'passwordConfirmError' => 'Password confirmation failed'
+                'name'                 => $_POST['name'],
+                'lastname'             => $_POST['lastname'],
+                'email'                => $_POST['email'],
+                'passwordConfirmError' => 'Password confirmation failed',
             ]);
 
             return;
@@ -160,11 +163,11 @@ class AuthController extends Controller {
         $usersRepo = $em->getRepository(User::class);
         $user = $usersRepo->findOneBy(['email' => $_POST['email']]);
 
-        if($user) {
+        if ($user) {
             $this->view->render([
-                'name' => $_POST['name'],
-                'lastname' => $_POST['lastname'],
-                'emailError' => 'Account with this Email already exists'
+                'name'       => $_POST['name'],
+                'lastname'   => $_POST['lastname'],
+                'emailError' => 'Account with this Email already exists',
             ]);
 
             return;
@@ -175,19 +178,42 @@ class AuthController extends Controller {
         $user->setName($_POST['name']);
         $user->setLastname($_POST['lastname']);
         $user->setPassword(password_hash($_POST['password'], PASSWORD_DEFAULT));
-        $user->setBirthDate(new DateTime());
+        $user->setBirthDate(new \DateTime());
         $user->setAdressStreet('[Street]');
         $user->setAdressHouseNumber('[House number]');
         $user->setAdressZipCode('[Zip code]');
-        $user->setAdressTown('[Town]');
+        //$user->setAdressTown('[Town]');
 
-        $em->persist($user);
-        $em->flush();
+        try {
+            $em->persist($user);
+            $em->flush();
 
-        $_SESSION[USER_ID] = $user->getId();
-        $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
+            $_SESSION[USER_ID] = $user->getId();
+            $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
 
-        $this->redirectTo('home');
+            $this->redirectTo('home');
+        } catch (ORMException $e) {
+            $this->view->render([
+                'name'                 => $_POST['name'],
+                'lastname'             => $_POST['lastname'],
+                'email'                => $_POST['lastname'],
+                'passwordConfirmError' => 'Database error, try again later',
+            ]);
+        }
+    }
+
+    public function logout() {
+        session_start();
+
+        if (isset($_SESSION[USER_ID])) {
+            unset($_SESSION[USER_ID]);
+        }
+
+        if (isset($_SESSION[CSRF_TOKEN])) {
+            unset($_SESSION[CSRF_TOKEN]);
+        }
+
+        $this->redirectTo('login');
     }
 
 }

@@ -1,0 +1,41 @@
+<?php $this->include('head.phtml') ?>
+<body>
+    <main class="main">
+        <nav class="main__topnav">
+            <div class="topnav__user">
+                <span id="js-name">Krystian</span>
+                <span id="js-lastname">Borowicz</span>
+            </div>
+            <div class="topnav__buttons">
+                <button type="button" class="btn btn--light"
+                    onclick="document.location.href='<?=$this->route('logout')?>'">log out</button>
+                <button type="submit" class="btn">generate CV</button>
+            </div>
+        </nav>
+        <div class="main__data-group">
+            <div class="row row--right row--1-3">
+                <input type="text" class="form-control">
+                <input type="text" class="form-control">
+            </div>
+            <div class="row row--right row--1-3">
+                <input type="text" class="form-control">
+                <input type="text" class="form-control">
+            </div>
+            <div class="row row--right row--2-3">
+                <input type="text" class="form-control">
+            </div>
+            <div class="row row--1-3">
+                <input type="text" class="form-control">
+                <input type="text" class="form-control">
+                <input type="text" class="form-control">
+            </div>
+            <div class="row row--1">
+                <input type="text" class="form-control">
+            </div>
+            <div class="row row--1">
+                <input type="text" class="form-control">
+            </div>
+        </div>
+    </main>
+</body>
+</html>

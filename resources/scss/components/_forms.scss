@@ -13,6 +13,7 @@
     font-weight: 500;
     padding: 8px;
     transition: .2s ease-in-out;
+    background-color: $color-background;
 
     &--error {
         border: 2px solid $color-error !important;
@@ -28,6 +29,8 @@
 }
 
 .btn {
+    @include flex;
+
     min-width: 80px;
     height: 30px;
     background-color: $color-primary;

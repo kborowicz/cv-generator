@@ -16,4 +16,8 @@ $routes->add('signup', "signup/")
     ->setController(\App\Controller\AuthController::class)
     ->setAction('signup');
 
+$routes->add('logout', "logout/")
+    ->setController(\App\Controller\AuthController::class)
+    ->setAction('logout');
+
 return $routes;

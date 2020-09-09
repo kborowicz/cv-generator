@@ -65,7 +65,7 @@ class View {
         $path = PUBLIC_DIR . $name;
 
         if(!file_exists($path)) {
-            return '{File not exists}';
+            return 'File not found';
         }
 
         return PUBLIC__RELATIVE_DIR . $name . '?' . rand();
@@ -77,7 +77,7 @@ class View {
 
     public function csrf() {
         if(!isset($_SESSION[CSRF_TOKEN])) {
-            return "<p style='color: red'>{Undefined token}</p>";
+            return "<p style='color: red'>Undefined token</p>";
         }
 
         return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $_SESSION[CSRF_TOKEN] . '"/>';
