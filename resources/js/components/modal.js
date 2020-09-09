@@ -1,4 +1,4 @@
-import { el } from 'kdom';
+import { el } from 'utils';
 import anime from 'anime';
 
 export default class Modal {

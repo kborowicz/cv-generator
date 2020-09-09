@@ -27,19 +27,14 @@ gulp.task('js', function() {
         .pipe(gulp.dest('public/js'));
 });
 
-gulp.task('rollup', function() {
+gulp.task('rollup-utils', function() {
     return gulp.src('resources/js/**/*.js')
         .pipe(sourcemaps.init())
         .pipe(rollup({
-            input: 'resources/js/app.js',
-            external: ['kdom', 'anime'],
+            input: 'resources/js/base/utils.js',
             output: {
                 format: 'umd',
-                name: 'app',
-                globals: {
-                    kdom: 'kdom',
-                    anime: 'anime'
-                }
+                name: 'utils'
             }
         }))
         .pipe(terser())
@@ -47,17 +42,24 @@ gulp.task('rollup', function() {
         .pipe(gulp.dest('public/js'));
 });
 
-gulp.task('hash', function() {
-    return gulp.src('public/**/*.{js,gif}')
-        .pipe(hash({
-            template: '<%= name %><%= ext %>?v=<%= hash %>'
-        })) // Add hashes to the files' names
-        .pipe(gulp.dest('public/')) // Write the renamed files
-        .pipe(hash.manifest('public/manifest.json', { // Generate the manifest file
-            deleteOld: true,
-            sourceDir: 'public/'
+gulp.task('rollup', function() {
+    return gulp.src('resources/js/**/*.js')
+        .pipe(sourcemaps.init())
+        .pipe(rollup({
+            input: 'resources/js/app.js',
+            external: ['utils', 'anime'],
+            output: {
+                format: 'umd',
+                name: 'app',
+                globals: {
+                    utils: 'utils',
+                    anime: 'anime'
+                }
+            }
         }))
-        .pipe(gulp.dest('.')); // Write the manifest file (see note below)
+        .pipe(terser())
+        .pipe(sourcemaps.write('./maps/'))
+        .pipe(gulp.dest('public/js'));
 });
 
 gulp.task('dev', function() {

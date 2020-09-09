@@ -43,22 +43,22 @@ class User {
     /**
      * @Column(type="string", length=45, nullable=false)
      */
-    protected $adress_street;
+    protected $adressStreet;
 
     /**
      * @Column(type="string", length=15, nullable=false)
      */
-    protected $adress_houseNumber;
+    protected $adressHouseNumber;
 
     /**
      * @Column(type="string", length=15, nullable=false)
      */
-    protected $adress_zipCode;
+    protected $adressZipCode;
 
     /**
      * @Column(type="string", length=45, nullable=false)
      */
-    protected $adress_Town;
+    protected $adressTown;
 
     /**
      * @Column(type="string", nullable=true)
@@ -84,10 +84,6 @@ class User {
      * @OneToMany(targetEntity="EducationHistory", mappedBy="user", orphanRemoval=true)
      */
     protected $educationHistory;
-
-    public function getFullName() {
-        return $this->name . ' ' . $this->lastname;
-    }
 
     /**
      * Constructor
@@ -226,7 +222,7 @@ class User {
      * @return User
      */
     public function setAdressStreet($adressStreet) {
-        $this->adress_street = $adressStreet;
+        $this->adressStreet = $adressStreet;
 
         return $this;
     }
@@ -237,7 +233,7 @@ class User {
      * @return string
      */
     public function getAdressStreet() {
-        return $this->adress_street;
+        return $this->adressStreet;
     }
 
     /**
@@ -248,7 +244,7 @@ class User {
      * @return User
      */
     public function setAdressHouseNumber($adressHouseNumber) {
-        $this->adress_houseNumber = $adressHouseNumber;
+        $this->adressHouseNumber = $adressHouseNumber;
 
         return $this;
     }
@@ -259,7 +255,7 @@ class User {
      * @return string
      */
     public function getAdressHouseNumber() {
-        return $this->adress_houseNumber;
+        return $this->adressHouseNumber;
     }
 
     /**
@@ -270,7 +266,7 @@ class User {
      * @return User
      */
     public function setAdressZipCode($adressZipCode) {
-        $this->adress_zipCode = $adressZipCode;
+        $this->adressZipCode = $adressZipCode;
 
         return $this;
     }
@@ -281,7 +277,7 @@ class User {
      * @return string
      */
     public function getAdressZipCode() {
-        return $this->adress_zipCode;
+        return $this->adressZipCode;
     }
 
     /**
@@ -292,7 +288,7 @@ class User {
      * @return User
      */
     public function setAdressTown($adressTown) {
-        $this->adress_Town = $adressTown;
+        $this->adressTown = $adressTown;
 
         return $this;
     }
@@ -303,40 +299,7 @@ class User {
      * @return string
      */
     public function getAdressTown() {
-        return $this->adress_Town;
-    }
-
-    /**
-     * Add file.
-     *
-     * @param \App\Model\Entity\File $file
-     *
-     * @return User
-     */
-    public function addFile(\App\Model\Entity\File $file) {
-        $this->files[] = $file;
-
-        return $this;
-    }
-
-    /**
-     * Remove file.
-     *
-     * @param \App\Model\Entity\File $file
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeFile(\App\Model\Entity\File $file) {
-        return $this->files->removeElement($file);
-    }
-
-    /**
-     * Get files.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getFiles() {
-        return $this->files;
+        return $this->adressTown;
     }
 
     /**
@@ -492,4 +455,9 @@ class User {
     public function getImageUrl() {
         return $this->imageUrl;
     }
+
+    public function getFullName() {
+        return $this->name . ' ' . $this->lastname;
+    }
+
 }

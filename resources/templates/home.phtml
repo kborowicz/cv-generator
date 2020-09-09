@@ -9,33 +9,106 @@
             <div class="topnav__buttons">
                 <button type="button" class="btn btn--light"
                     onclick="document.location.href='<?=$this->route('logout')?>'">log out</button>
-                <button type="submit" class="btn">generate CV</button>
+                <button type="button" class="btn btn--light">save</button>
+                <button type="submit" class="btn">create CV</button>
             </div>
         </nav>
+        <?=$this->csrf()?>
         <div class="main__data-group">
+            <img src="<?=$this->asset('img.jpg')?>" alt="<?=$this->user->getFullName()?>" class="cv-image">
             <div class="row row--right row--1-3">
-                <input type="text" class="form-control">
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" placeholder="Name" value="<?=$this->user->getName()?>">
+                <input type="text" class="form-control" placeholder="Lastname" value="<?=$this->user->getLastname()?>">
             </div>
             <div class="row row--right row--1-3">
-                <input type="text" class="form-control">
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" placeholder="Birth date" value="dd-mm-yyyy">
+                <input type="text" class="form-control" placeholder="Phone number" value="123-123-123">
             </div>
             <div class="row row--right row--2-3">
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" placeholder="Email"  value="<?=$this->user->getEmail()?>">
             </div>
-            <div class="row row--1-3">
-                <input type="text" class="form-control">
-                <input type="text" class="form-control">
-                <input type="text" class="form-control">
-            </div>
-            <div class="row row--1">
-                <input type="text" class="form-control">
+            <div class="row row--right row--1-3">
+                <input type="text" class="form-control" placeholder="Street and House number" value="<?=$this->user->getAdressHouseNumber()?>">
+                <input type="text" class="form-control" placeholder="Zip code and town" value="<?=$this->user->getAdressTown()?>">
             </div>
             <div class="row row--1">
-                <input type="text" class="form-control">
+                <textarea class="form-control form-control--textarea" placeholder="RODO"></textarea>
+            </div>
+            <div class="row row--1">
+                <input type="text" class="form-control" placeholder="GitHub link">
+            </div>
+        </div>
+
+        <div class="main__data-group">
+            <div class="header">Skills</div>
+            <div id="js-skills">
+                <!-- <div class="row">
+                    <input type="text" class="form-control" placeholder="Interests">
+                    <div class="row__delete-icon"><i class="ic-x"></i></div>
+                </div> -->
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn--light" id="js-skills-add-btn">add</button>
+            </div>
+        </div>
+
+        <div class="main__data-group">
+            <div class="header">Interests</div>
+            <div id="js-interests">
+                <!-- <div class="row">
+                    <input type="text" class="form-control" placeholder="Interests">
+                    <div class="row__delete-icon"><i class="ic-x"></i></div>
+                </div> -->
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn--light" id="js-interests-add-btn">add</button>
+            </div>
+        </div>
+
+        <div class="main__data-group" id="js-emplyment-history">
+            <div class="header">Employment history</div>
+            <div id="js-employment-history">
+                <!-- <div class="row row--history">
+                    <div style="flex: 1">
+                        <div class="row">
+                            <input type="text" class="form-control col--1-3" placeholder="Period">
+                            <input type="text" class="form-control col--2-3" placeholder="Title">
+                        </div>
+                        <textarea class="form-control form-control--textarea" placeholder="Description"></textarea>
+                    </div>
+                    <div class="row__delete-icon"><i class="ic-x"></i></div>
+                </div> -->
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn--light" id="js-employment-add-btn">add</button>
+            </div>
+        </div>
+
+        <div class="main__data-group">
+            <div class="header">Education history</div>
+            <div id="js-education-history">
+                <!-- <div class="row row--history">
+                    <div style="flex: 1">
+                        <div class="row">
+                            <input type="text" class="form-control col--1-3" placeholder="Period">
+                            <input type="text" class="form-control col--2-3" placeholder="Title">
+                        </div>
+                        <textarea class="form-control form-control--textarea" placeholder="Description"></textarea>
+                    </div>
+                    <div class="row__delete-icon"><i class="ic-x"></i></div>
+                </div> -->
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn--light" id="js-education-add-btn">add</button>
             </div>
         </div>
     </main>
+    <div class="banner">
+        <b>CV Generator</b>&nbsp;by&nbsp;<a href="https://github.com/Grubix" class="link" target="_blank">Grubix</a>
+    </div>
+
+    <script src="<?=$this->asset('js/base/utils.js')?>"></script>
+    <script src="<?=$this->asset('js/base/anime.js')?>"></script>
+    <script src="<?=$this->asset('js/app.js')?>"></script>
 </body>
 </html>
