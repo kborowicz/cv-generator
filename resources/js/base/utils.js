@@ -298,8 +298,10 @@ export function ajax(settings) {
         method: 'GET',
         returnType: 'text', // text | xml | json
         url: null,
-        headers: null,
-        data: null
+        data: null,
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
     };
 
     const s = Object.assign({}, defaults, (typeof settings === 'object') ? settings : { url: settings });

@@ -8,6 +8,7 @@ use App\Core\Controller;
 use App\Model\Entity\User;
 use App\Core\Http\JsonResponse;
 use App\Core\Http\FileResponse;
+use Dompdf\Dompdf;
 
 class HomeController extends Controller {
 
@@ -38,16 +39,20 @@ class HomeController extends Controller {
     }
 
     public function generateCV($id) {
-        if($id !== $this->user->getId()) {
+        if($id != $this->user->getId()) {
             $this->redirectTo('home');
         }
 
-        //TODO 
+        $dompdf = new Dompdf();
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->loadHtml((new View('cv/template.phtml', ['user' => $this->user]))->renderToString());
+        $dompdf->render();
+        $dompdf->stream('cv.pdf', array('Attachment' => 0));
     }
 
     public function saveData() {
-        if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
-            return new JsonResponse(null, null, 'Access denied');
+        if (empty($_POST['token']) || $_POST['token'] !== $_SESSION[CSRF_TOKEN]) {
+            return new JsonResponse(null, null, 'Access denied' . $_SESSION[CSRF_TOKEN]);
         }
 
         if (!empty($_POST['base'])) {
@@ -110,7 +115,14 @@ class HomeController extends Controller {
 
     public function uploadImage() {
         if(isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] == UPLOAD_ERR_OK) {
-            $fileName = uniqid() . '__.' . pathinfo($_FILES['imageFile']['name'])['extension'];
+            $allowedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'svg'];
+            $fileExtension = pathinfo($_FILES['imageFile']['name'])['extension'];
+
+            if(!in_array($fileExtension, $allowedExtensions)) {
+                return new JsonResponse(null, null, 'Invalid image file type');
+            }
+
+            $fileName = uniqid() . '__.' . $fileExtension;
             
             if(!move_uploaded_file($_FILES['imageFile']['tmp_name'], IMAGES_DIR . $fileName)) {
                 return new JsonResponse(null, null, 'Image upload error [2]');
@@ -128,7 +140,7 @@ class HomeController extends Controller {
             App::getEntityManager()->flush();
             $url = App::getRouter()->getRoutes()->get('open-image')->getUrl(['imageFile' => $fileName]);
 
-            return new JsonResponse($url, null, null);
+            return new JsonResponse($url, 'Image uploaded successfully', null);
         } else {
             return new JsonResponse(null, null, 'Image upload error [1]');
         }

@@ -311,7 +311,7 @@ button:focus {
 
 .cv-image {
   position: absolute;
-  width: calc(33.33333% - 20px);
+  width: calc(33.33333% - 30px);
   height: 205px;
   background-color: inherit;
   border-radius: 4px;

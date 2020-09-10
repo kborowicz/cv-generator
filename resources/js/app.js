@@ -284,13 +284,14 @@ class App {
             method: 'post',
             url: '/cv-generator/upload-image',
             returnType: 'json',
-            data: formData
+            data: formData,
+            headers: null
         }).then(response => {
             if (response.data) {
                 this.userImage.src = response.data;
+            } else if (response.error) {
+                Toast.show('error', response.error);
             }
-            console.log(response);
-            // w response musi byc zwrocone url do zdjecia i potem ustawione w miniaturce
         });
     }
 }

@@ -1,0 +1,214 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="charset=utf-8"/>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @font-face {
+            font-family: "regular";
+            src: url("fonts/Lato-Regular.ttf");
+        }
+
+        @font-face {
+            font-family: "bold";
+            src: url("fonts/Lato-Bold.ttf");
+        }
+
+        @font-face {
+            font-family: "bold-italic";
+            src: url("fonts/Lato-BoldItalic.ttf");
+        }
+
+        @font-face {
+            font-family: "italic";
+            src: url("fonts/Lato-Italic.ttf");
+        }
+
+        @font-face {
+            font-family: "light-italic";
+            src: url("fonts/Lato-LightItalic.ttf");
+        }
+
+        @font-face {
+            font-family: "black";
+            src: url("fonts/Lato-Black.ttf");
+        }
+
+        @font-face {
+            font-family: "light";
+            src: url("fonts/Lato-Light.ttf");
+        }
+
+        @page {
+            margin: 0px 0px 0px 0px !important;
+            padding: 0px 0px 0px 0px !important;
+        }
+
+        body {
+            font-family: "regular";
+        }
+
+        .f-r {
+            font-family: "regular"
+        }
+
+        .f-b {
+            font-family: "bold"
+        }
+
+        .f-b {
+            font-family: "black"
+        }
+
+        p {
+            padding: 0;
+            margin: 0;
+        }
+
+        #left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 240px;
+            background-color: #094b41;
+            color: #fff;
+        }
+
+        #right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 240px;
+        }
+
+        #left .info-header {
+            font-family: "bold";
+            font-size: 14px;
+        }
+
+        #left .info {
+            font-family: "light";
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .skill-tick {
+            padding-left: 10px;
+            padding-right: 5px;
+            padding-top: 6px;
+            vertical-align: top;
+        }
+
+        .skill-tick img {
+            width: 12px; 
+        }
+
+        .skill {
+            width: 100%;
+            font-size: 12px;
+            padding-right: 10px;
+            vertical-align: top;
+            padding-bottom: 10px;
+        }
+
+        #right {
+            padding: 0 20px 20px 20px;
+            text-align: justify;
+        }
+
+        .name {
+            font-family: "bold";
+            font-size: 35px;
+        }
+
+        .date {
+            text-align: left; 
+            font-size: 13px; 
+            color: grey; 
+            font-family: "regular";
+        }
+    </style>
+</head>
+<body>
+    <div id="left">
+        <img src="..." style="width: 100%"/>
+        <div style="background-color: #022c25; padding: 10px">
+            <div class="info-header">ADRES</div>
+            <div class="info">
+                <?=$this->user->getAdressStreetAndHouseNumber()?><br>
+                <?=$this->user->getAdressTownAndZipCode()?>
+            </div>
+            <div class="info-header">KONTAKT</div>
+            <div class="info">
+                <?=$this->user->getPhoneNumber()?><br>
+                <?=$this->user->getEmail()?>
+            </div>
+            <div class="info-header">DATA URODZENIA</div>
+            <div class="info">
+                <?=$this->user->getBirthDate()->format('d-m-Y')?>
+            </div>
+        </div>
+        <div class="info-header" style="padding-left:10px; padding-top: 25px;">UMIEJĘTNOŚCI</div>
+        <div id="skills" style="margin-top: 5px">
+            <table>
+                <?php foreach ($this->user->getSkills() as $s) : ?>
+                    <tr>
+                        <td class="skill-tick"><img src="tick.png"></td>
+                        <td class="skill"><?=$s?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+        <div class="info-header" style="padding-left:10px; padding-top: 25px;">ZAINTERESOWANIA</div>
+        <div id="skills" style="margin-top: 5px">
+            <table>
+                <?php foreach ($this->user->getInterests() as $i) : ?>
+                    <tr>
+                        <td class="skill-tick"><img src="tick.png"></td>
+                        <td class="skill"><?=$i?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>
+    </div>
+    <div id="right">
+        <div class="name"><?=$this->user->getFullName()?></div><br>
+        <div style="margin-top: 20px; font-size: 20px; font-family: \'bold\'">HISTORIA ZATRUDNIENIA</div>
+        <hr style="margin: 0; padding: 0; height: 0; border: none; border-top: 1px solid #000">
+
+        <?php foreach ($this->user->getEmploymentHistory() as $emp) : ?>
+            <div style="text-align: left; font-size: 13px; color: grey; font-family: \'regular\'">
+                <?=$emp['period']?>
+            </div>
+            <div style="font-size: 13px; font-family: \'black\'">
+                <?=$emp['title']?>
+            </div>
+            <div style="font-size: 13px; font-family: \'regular\'">
+                <?=$emp['description']?>
+            </div><br>
+        <?php endforeach; ?>
+
+        <div style="margin-top: 20px; font-size: 20px; font-family: \'bold\'">WYKSZTAŁCENIE</div>
+        <hr style="margin: 0; padding: 0; height: 0; border: none; border-top: 1px solid #000">
+
+        <?php foreach ($this->user->getEducationHistory() as $edu) : ?>
+            <div style="text-align: left; font-size: 13px; color: grey; font-family: \'regular\'">
+                <?=$edu['period']?>
+            </div>
+            <div style="font-size: 13px; font-family: \'black\'">
+                <?=$edu['title']?>
+            </div>
+            <div style="font-size: 13px; font-family: \'regular\'">
+                <?=$edu['description']?>
+            </div><br>
+        <?php endforeach; ?>
+
+        <div style="position: absolute; bottom: 0; color: grey; font-size: 10px"><?=$this->user->getRodo()?></div>
+    </div>
+</body>
+</html>

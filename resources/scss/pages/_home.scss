@@ -99,7 +99,7 @@ $main-width: 650px;
 
 .cv-image {
     position: absolute;
-    width: fill(3, 15px);
+    width: fill(3, 15px, 30);
     height: 4 * 40px + 3 * 15px;
     background-color: inherit;
     border-radius: 4px;

@@ -16,7 +16,14 @@
         </nav>
         <div class="main__data-group">
             <div class="cv-image">
-                <img src="<?=$this->asset('img.jpg')?>" alt="<?=$this->user->getFullName()?>" class="cv-image__image" id="js-user-image">
+                <?php 
+                if(empty($this->user->getImageFile())) {
+                    $imageUrl = '';
+                } else {
+                    $imageUrl = $this->route('open-image', ['imageFile' => $this->user->getImageFile()]);
+                }
+                ?>
+                <img src="<?=$imageUrl?>" class="cv-image__image" id="js-user-image">
                 <input type="file" id="js-image-upload-input" accept="image/*" class="cv-image__select">
             </div>
             <div class="row row--right row--1-3" style="margin-top: 0">
