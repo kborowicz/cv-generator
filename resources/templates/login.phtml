@@ -3,7 +3,7 @@
     <div class="login__wrapper">
         <div class="login__container">
             <form action="<?=$this->route('login')?>" method="post">
-                <?=$this->csrf()?>
+                <?=$this->csrfInput()?>
                 <div class="login__row">
                     <input type="text" name="email" placeholder="Email" class="form-control form-control--text"
                         value="<?= $this->isset('email') ? $this->email : ''?>">

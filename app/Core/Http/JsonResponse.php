@@ -10,10 +10,10 @@ class JsonResponse extends Response {
 
     protected $success;
 
-    public function __construct($data = null, $error = null, $success = null) {
+    public function __construct($data = null, $success = null, $error = null) {
         $this->data = $data;
-        $this->error = $error;
         $this->success = $success;
+        $this->error = $error;
 
         $this->headers = [
             'Content-Type'  => 'application/json',

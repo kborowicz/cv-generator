@@ -68,7 +68,7 @@ export default class Toast {
         anime({ // Show animation
             targets: this.dom,
             duration: this.showDuration,
-            easing: 'easeOutElastic(0.5, 1)',
+            easing: 'easeOutCubic',
             height: [0, this.dom.offsetHeight],
             opacity: [0, 1],
             complete: () => {
@@ -101,7 +101,7 @@ export default class Toast {
             duration: this.hideDuration,
             opacity: 0,
             left: '-10%',
-            easing: 'cubicBezier(.17,.67,.62,.96)',
+            easing: 'easeOutCubic',
             complete: () => {
                 Toast.remove(this);
                 this.onhide();

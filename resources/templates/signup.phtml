@@ -4,7 +4,7 @@
     <div class="login__wrapper">
         <div class="login__container">
             <form action="<?=$this->route('signup')?>" method="post">
-                <?=$this->csrf()?>
+                <?=$this->csrfInput()?>
                 <div class="login__row">
                     <input type="text" name="name" placeholder="Name" class="form-control form-control--text"
                         value="<?= $this->isset('name') ? $this->name : ''?>">

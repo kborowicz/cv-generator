@@ -109,7 +109,7 @@ class Route {
     public function getUrl($params = []) {
         $url = $this->pattern;
 
-        preg_match_all('/\{([a-z]+)\}/', $this->pattern, $matches);
+        preg_match_all('/\{([a-zA-Z]+)\}/', $this->pattern, $matches);
         if($matches) {
             foreach($matches[1] as $index => $groupMatch) {
                 if(array_key_exists($groupMatch, $params)) {
@@ -120,7 +120,7 @@ class Route {
             }
         }
 
-        preg_match_all('/\{([a-z]+):([^\}]+)\}/', $this->pattern, $matches);
+        preg_match_all('/\{([a-zA-Z]+):([^\}]+)\}/', $this->pattern, $matches);
         if($matches) {
             foreach($matches[1] as $index => $groupMatch) {
                 if(array_key_exists($groupMatch, $params)) {

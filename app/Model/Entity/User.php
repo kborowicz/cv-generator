@@ -36,64 +36,59 @@ class User {
     protected $lastname;
 
     /**
-     * @Column(type="date", nullable=false)
+     * @Column(type="date", nullable=true)
      */
     protected $birthDate;
 
     /**
-     * @Column(type="string", length=45, nullable=false)
+     * @Column(type="integer", length=9, nullable=true)
      */
-    protected $adressStreet;
-
-    /**
-     * @Column(type="string", length=15, nullable=false)
-     */
-    protected $adressHouseNumber;
-
-    /**
-     * @Column(type="string", length=15, nullable=false)
-     */
-    protected $adressZipCode;
-
-    /**
-     * @Column(type="string", length=45, nullable=false)
-     */
-    protected $adressTown;
+    protected $phoneNumber;
 
     /**
      * @Column(type="string", nullable=true)
      */
-    protected $imageUrl;
+    protected $adressStreetAndHouseNumber;
 
     /**
-     * @OneToMany(targetEntity="Skills", mappedBy="user", orphanRemoval=true)
+     * @Column(type="string", nullable=true)
+     */
+    protected $adressTownAndZipCode;
+
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    protected $imageFile;
+
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    protected $rodo;
+
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    protected $githubLink;
+
+    /**
+     * @Column(type="json", nullable=true)
      */
     protected $skills;
 
     /**
-     * @OneToMany(targetEntity="Interests", mappedBy="user", orphanRemoval=true)
+     * @Column(type="json", nullable=true)
      */
     protected $interests;
 
     /**
-     * @OneToMany(targetEntity="EmploymentHistory", mappedBy="user", orphanRemoval=true)
+     * @Column(type="json", nullable=true)
      */
     protected $employmentHistory;
 
     /**
-     * @OneToMany(targetEntity="EducationHistory", mappedBy="user", orphanRemoval=true)
+     * @Column(type="json", nullable=true)
      */
     protected $educationHistory;
-
-    /**
-     * Constructor
-     */
-    public function __construct() {
-        $this->skills = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->interests = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->employmentHistory = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->educationHistory = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Get id.
@@ -193,6 +188,15 @@ class User {
     }
 
     /**
+     * Get fullname.
+     *
+     * @return string
+     */
+    public function getFullName() {
+        return $this->name . ' ' . $this->lastname;
+    }
+
+    /**
      * Set birthDate.
      *
      * @param \DateTime $birthDate
@@ -215,249 +219,224 @@ class User {
     }
 
     /**
-     * Set adressStreet.
+     * Set adressStreetAndHouseNumber.
      *
-     * @param string $adressStreet
+     * @param string $adressStreetAndHouseNumber
      *
      * @return User
      */
-    public function setAdressStreet($adressStreet) {
-        $this->adressStreet = $adressStreet;
+    public function setAdressStreetAndHouseNumber($adressStreetAndHouseNumber) {
+        $this->adressStreetAndHouseNumber = $adressStreetAndHouseNumber;
 
         return $this;
     }
 
     /**
-     * Get adressStreet.
+     * Get adressStreetAndHouseNumber.
      *
      * @return string
      */
-    public function getAdressStreet() {
-        return $this->adressStreet;
+    public function getAdressStreetAndHouseNumber() {
+        return $this->adressStreetAndHouseNumber;
     }
 
     /**
-     * Set adressHouseNumber.
+     * Set adressTownAndZipCode.
      *
-     * @param string $adressHouseNumber
+     * @param string $adressTownAndZipCode
      *
      * @return User
      */
-    public function setAdressHouseNumber($adressHouseNumber) {
-        $this->adressHouseNumber = $adressHouseNumber;
+    public function setAdressTownAndZipCode($adressTownAndZipCode) {
+        $this->adressTownAndZipCode = $adressTownAndZipCode;
 
         return $this;
     }
 
     /**
-     * Get adressHouseNumber.
+     * Get adressTownAndZipCode.
      *
      * @return string
      */
-    public function getAdressHouseNumber() {
-        return $this->adressHouseNumber;
+    public function getAdressTownAndZipCode() {
+        return $this->adressTownAndZipCode;
     }
 
     /**
-     * Set adressZipCode.
+     * Set skills.
      *
-     * @param string $adressZipCode
+     * @param json|null $skills
      *
      * @return User
      */
-    public function setAdressZipCode($adressZipCode) {
-        $this->adressZipCode = $adressZipCode;
+    public function setSkills($skills = null) {
+        $this->skills = $skills;
 
         return $this;
-    }
-
-    /**
-     * Get adressZipCode.
-     *
-     * @return string
-     */
-    public function getAdressZipCode() {
-        return $this->adressZipCode;
-    }
-
-    /**
-     * Set adressTown.
-     *
-     * @param string $adressTown
-     *
-     * @return User
-     */
-    public function setAdressTown($adressTown) {
-        $this->adressTown = $adressTown;
-
-        return $this;
-    }
-
-    /**
-     * Get adressTown.
-     *
-     * @return string
-     */
-    public function getAdressTown() {
-        return $this->adressTown;
-    }
-
-    /**
-     * Add skill.
-     *
-     * @param \App\Model\Entity\Skills $skill
-     *
-     * @return User
-     */
-    public function addSkill(\App\Model\Entity\Skills $skill) {
-        $this->skills[] = $skill;
-
-        return $this;
-    }
-
-    /**
-     * Remove skill.
-     *
-     * @param \App\Model\Entity\Skills $skill
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeSkill(\App\Model\Entity\Skills $skill) {
-        return $this->skills->removeElement($skill);
     }
 
     /**
      * Get skills.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return json|null
      */
     public function getSkills() {
         return $this->skills;
     }
 
     /**
-     * Add interest.
+     * Set interests.
      *
-     * @param \App\Model\Entity\Interests $interest
+     * @param json|null $interests
      *
      * @return User
      */
-    public function addInterest(\App\Model\Entity\Interests $interest) {
-        $this->interests[] = $interest;
+    public function setInterests($interests = null) {
+        $this->interests = $interests;
 
         return $this;
     }
 
     /**
-     * Remove interest.
-     *
-     * @param \App\Model\Entity\Interests $interest
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeInterest(\App\Model\Entity\Interests $interest) {
-        return $this->interests->removeElement($interest);
-    }
-
-    /**
      * Get interests.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return json|null
      */
     public function getInterests() {
         return $this->interests;
     }
 
     /**
-     * Add employmentHistory.
+     * Set employmentHistory.
      *
-     * @param \App\Model\Entity\EmploymentHistory $employmentHistory
+     * @param json|null $employmentHistory
      *
      * @return User
      */
-    public function addEmploymentHistory(\App\Model\Entity\EmploymentHistory $employmentHistory) {
-        $this->employmentHistory[] = $employmentHistory;
+    public function setEmploymentHistory($employmentHistory = null) {
+        $this->employmentHistory = $employmentHistory;
 
         return $this;
     }
 
     /**
-     * Remove employmentHistory.
-     *
-     * @param \App\Model\Entity\EmploymentHistory $employmentHistory
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeEmploymentHistory(\App\Model\Entity\EmploymentHistory $employmentHistory) {
-        return $this->employmentHistory->removeElement($employmentHistory);
-    }
-
-    /**
      * Get employmentHistory.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return json|null
      */
     public function getEmploymentHistory() {
         return $this->employmentHistory;
     }
 
     /**
-     * Add educationHistory.
+     * Set educationHistory.
      *
-     * @param \App\Model\Entity\EducationHistory $educationHistory
+     * @param json|null $educationHistory
      *
      * @return User
      */
-    public function addEducationHistory(\App\Model\Entity\EducationHistory $educationHistory) {
-        $this->educationHistory[] = $educationHistory;
+    public function setEducationHistory($educationHistory = null) {
+        $this->educationHistory = $educationHistory;
 
         return $this;
     }
 
     /**
-     * Remove educationHistory.
-     *
-     * @param \App\Model\Entity\EducationHistory $educationHistory
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeEducationHistory(\App\Model\Entity\EducationHistory $educationHistory) {
-        return $this->educationHistory->removeElement($educationHistory);
-    }
-
-    /**
      * Get educationHistory.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return json|null
      */
     public function getEducationHistory() {
         return $this->educationHistory;
     }
 
     /**
-     * Set imageUrl.
+     * Set rodo.
      *
-     * @param string $imageUrl
+     * @param string|null $rodo
      *
      * @return User
      */
-    public function setImageUrl($imageUrl) {
-        $this->imageUrl = $imageUrl;
+    public function setRodo($rodo = null) {
+        $this->rodo = $rodo;
 
         return $this;
     }
 
     /**
-     * Get imageUrl.
+     * Get rodo.
      *
-     * @return string
+     * @return string|null
      */
-    public function getImageUrl() {
-        return $this->imageUrl;
+    public function getRodo() {
+        return $this->rodo;
     }
 
-    public function getFullName() {
-        return $this->name . ' ' . $this->lastname;
+    /**
+     * Set githubLink.
+     *
+     * @param string|null $githubLink
+     *
+     * @return User
+     */
+    public function setGithubLink($githubLink = null) {
+        $this->githubLink = $githubLink;
+
+        return $this;
     }
 
+    /**
+     * Get githubLink.
+     *
+     * @return string|null
+     */
+    public function getGithubLink() {
+        return $this->githubLink;
+    }
+
+    /**
+     * Set phoneNumber.
+     *
+     * @param int|null $phoneNumber
+     *
+     * @return User
+     */
+    public function setPhoneNumber($phoneNumber = null) {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get phoneNumber.
+     *
+     * @return int|null
+     */
+    public function getPhoneNumber() {
+        return $this->phoneNumber;
+    }
+
+    /**
+     * Set imageFile.
+     *
+     * @param string|null $imageFile
+     *
+     * @return User
+     */
+    public function setImageFile($imageFile = null)
+    {
+        $this->imageFile = $imageFile;
+
+        return $this;
+    }
+
+    /**
+     * Get imageFile.
+     *
+     * @return string|null
+     */
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
 }

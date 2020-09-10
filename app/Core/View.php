@@ -75,12 +75,18 @@ class View {
         return \App\App::getRouter()->getRoutes()->get($name)->getUrl($params);
     }
 
-    public function csrf() {
+    public function csrfToken() {
+        return $_SESSION[CSRF_TOKEN] ?? null;
+    }
+
+    public function csrfInput() {
         if(!isset($_SESSION[CSRF_TOKEN])) {
             return "<p style='color: red'>Undefined token</p>";
         }
 
-        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $_SESSION[CSRF_TOKEN] . '"/>';
+        return '<input type="hidden" name="' . CSRF_TOKEN . '" 
+            value="' . $_SESSION[CSRF_TOKEN] . '" 
+            id="js-'. CSRF_TOKEN .'"/>';
     }
 
     public function __get($name) {

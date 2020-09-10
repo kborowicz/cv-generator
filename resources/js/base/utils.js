@@ -322,7 +322,6 @@ export function ajax(settings) {
                         try {
                             resolve(JSON.parse(xhr.responseText));
                         } catch (e) {
-                            console.error(xhr.responseText); // FIXME POTEM KONIECZNIE WYWALIC
                             reject(e);
                         }
                         break;
@@ -342,8 +341,6 @@ export function ajax(settings) {
         if (s.method.toUpperCase() == 'GET') {
             xhr.open('GET', s.url + '?' + serialize(s.data), true);
 
-            // console.log(s.url + '?' + serialize(s.data)); TODO for debugginf
-
             if (isObject(s.headers)) {
                 Object.keys(s.headers).forEach(header => {
                     xhr.setRequestHeader(header, s.headers[header]);
@@ -358,11 +355,13 @@ export function ajax(settings) {
                 Object.keys(s.headers).forEach(header => {
                     xhr.setRequestHeader(header, s.headers[header]);
                 });
-            } else {
-                xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
             }
 
-            xhr.send(serialize(s.data));
+            if (s.data instanceof FormData) {
+                xhr.send(s.data);
+            } else {
+                xhr.send(serialize(s.data));
+            }
         }
     });
 }

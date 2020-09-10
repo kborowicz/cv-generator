@@ -103,6 +103,10 @@ class AuthController extends Controller {
     }
 
     public function actionSignup() {
+        if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
+            $this->redirectTo('signup');
+        }
+
         if (empty($_POST['name'])) {
             $this->view->render(['nameError' => 'Name is required']);
 
@@ -179,10 +183,6 @@ class AuthController extends Controller {
         $user->setLastname($_POST['lastname']);
         $user->setPassword(password_hash($_POST['password'], PASSWORD_DEFAULT));
         $user->setBirthDate(new \DateTime());
-        $user->setAdressStreet('[Street]');
-        $user->setAdressHouseNumber('[House number]');
-        $user->setAdressZipCode('[Zip code]');
-        //$user->setAdressTown('[Town]');
 
         try {
             $em->persist($user);

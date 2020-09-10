@@ -8,7 +8,6 @@ const sourcemaps = require('gulp-sourcemaps');
 const hash = require('gulp-hash');
 const iconfont = require('gulp-iconfont');
 const iconfontCss = require('gulp-iconfont-css');
-const fs = require('fs');
 
 gulp.task('sass', function() {
     return gulp.src('resources/scss/**/*.scss')
@@ -19,17 +18,8 @@ gulp.task('sass', function() {
         .pipe(gulp.dest('public/css'));
 });
 
-gulp.task('js', function() {
-    return gulp.src(['resources/js/**/*.js', '!resources/js/{utils,components}/*.js'])
-        .pipe(sourcemaps.init())
-        .pipe(terser())
-        .pipe(sourcemaps.write('./maps/'))
-        .pipe(gulp.dest('public/js'));
-});
-
 gulp.task('rollup-utils', function() {
     return gulp.src('resources/js/**/*.js')
-        .pipe(sourcemaps.init())
         .pipe(rollup({
             input: 'resources/js/base/utils.js',
             output: {
@@ -37,6 +27,7 @@ gulp.task('rollup-utils', function() {
                 name: 'utils'
             }
         }))
+        .pipe(sourcemaps.init())
         .pipe(terser())
         .pipe(sourcemaps.write('./maps/'))
         .pipe(gulp.dest('public/js'));
@@ -44,7 +35,6 @@ gulp.task('rollup-utils', function() {
 
 gulp.task('rollup', function() {
     return gulp.src('resources/js/**/*.js')
-        .pipe(sourcemaps.init())
         .pipe(rollup({
             input: 'resources/js/app.js',
             external: ['utils', 'anime'],
@@ -57,6 +47,7 @@ gulp.task('rollup', function() {
                 }
             }
         }))
+        .pipe(sourcemaps.init())
         .pipe(terser())
         .pipe(sourcemaps.write('./maps/'))
         .pipe(gulp.dest('public/js'));
