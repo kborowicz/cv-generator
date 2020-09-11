@@ -9,6 +9,7 @@ use App\Model\Entity\User;
 use App\Core\Http\JsonResponse;
 use App\Core\Http\FileResponse;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class HomeController extends Controller {
 
@@ -43,11 +44,30 @@ class HomeController extends Controller {
             $this->redirectTo('home');
         }
 
-        $dompdf = new Dompdf();
+        // ** Debug **
+        // global $_dompdf_warnings;
+        // $_dompdf_warnings = [];
+        // global $_dompdf_show_warnings;
+        // $_dompdf_show_warnings = true;
+
+        $cvResourcesPath = TEMPLATES_DIR . 'cv';
+
+        $pdfOptions = new Options();
+        $pdfOptions->setIsRemoteEnabled(true);
+        $pdfOptions->setChroot($cvResourcesPath);
+
+        $cvTemplate = new View('cv/template.phtml');
+        $cvTemplate->assign(['user' => $this->user]);
+
+        $dompdf = new Dompdf($pdfOptions);
+        $dompdf->setBasePath($cvResourcesPath);
         $dompdf->setPaper('A4', 'portrait');
-        $dompdf->loadHtml((new View('cv/template.phtml', ['user' => $this->user]))->renderToString());
+        $dompdf->loadHtml($cvTemplate->renderToString());
         $dompdf->render();
-        $dompdf->stream('cv.pdf', array('Attachment' => 0));
+        $dompdf->stream('cv.pdf', ['Attachment' => 0]);
+
+        // ** Debug **
+        // var_dump($_dompdf_warnings);
     }
 
     public function saveData() {

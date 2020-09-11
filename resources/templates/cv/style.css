@@ -1,0 +1,120 @@
+@page {
+    margin: 0px 0px 0px 0px !important;
+    padding: 0px 0px 0px 0px !important;
+}
+
+@font-face {
+    font-family: "lato-regular";
+    src: url("fonts/Lato-Regular.ttf");
+}
+
+@font-face {
+    font-family: "lato-bold";
+    src: url("fonts/Lato-Bold.ttf");
+}
+
+@font-face {
+    font-family: "lato-black";
+    src: url("fonts/Lato-Black.ttf");
+}
+
+@font-face {
+    font-family: "lato-light";
+    src: url("fonts/Lato-Light.ttf");
+}
+
+body {
+    font-family: "lato-regular";
+}
+
+.f-r {
+    font-family: "lato-regular"
+}
+
+.f-b {
+    font-family: "lato-bold"
+}
+
+.f-b {
+    font-family: "lato-black"
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+#left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    background-color: #094b41;
+    color: #fff;
+}
+
+#right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 240px;
+}
+
+#left .info-header {
+    font-family: "bold";
+    font-size: 14px;
+}
+
+#left .info {
+    font-family: "light";
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+ul {
+    list-style: none;
+}
+
+.skill-tick {
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 6px;
+    vertical-align: top;
+}
+
+.skill-tick img {
+    width: 12px; 
+}
+
+.skill {
+    width: 100%;
+    font-size: 12px;
+    padding-right: 10px;
+    vertical-align: top;
+    padding-bottom: 10px;
+}
+
+#right {
+    padding: 0 20px 20px 20px;
+    text-align: justify;
+}
+
+.name {
+    font-family: "bold";
+    font-size: 35px;
+}
+
+.date {
+    text-align: left; 
+    font-size: 13px; 
+    color: grey;
+    font-family: "regular";
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
