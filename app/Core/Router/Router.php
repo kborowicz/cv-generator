@@ -55,7 +55,6 @@ class Router {
 
             if(!empty($action)) {
                 if(method_exists($controller, $action) && is_callable([$controller, $action])) {
-                    //TODO uwzględnić $router defaults
                     //TODO posortować kolejność argumentów przed call user func array (użyć ReflectionMethod)
                     $controller->before($action);
                     $result = call_user_func_array([$controller, $action], $this->params);

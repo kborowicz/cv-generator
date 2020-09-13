@@ -1,6 +1,9 @@
 <?php
 
 use App\Core\Router\RouteCollection;
+use App\Core\Router\Route;
+
+Route::setPrefix('cv-generator');
 
 $routes = new RouteCollection();
 
@@ -43,5 +46,20 @@ $routes->add('ajax-upload-image', "upload-image/")
 $routes->add('open-image', "image/{imageFile}")
     ->setController(\App\Controller\HomeController::class)
     ->setAction('openImage');
+
+$routes->add('test', "test/{a}.{b:[abc]+}.{c:\d+}")
+    ->setController(\App\Controller\HomeController::class)
+    ->setAction('test');
+
+// $routes->add('generate', [
+//     'controller' => \App\Controller\HomeController::class,
+//     'action'     => 'openImage',
+//     'pattern'    => 'generate/{id}',
+//     'redirect'   => 'home',
+//     'methods'    => ['post', 'get'],
+//     'defaults'   => [
+//         'id' => 10,
+//     ],
+// ]);
 
 return $routes;

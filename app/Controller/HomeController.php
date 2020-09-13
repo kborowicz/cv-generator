@@ -174,4 +174,12 @@ class HomeController extends Controller {
         return new FileResponse(IMAGES_DIR . $imageFile);
     }
 
+    public function test($a, $b, $c) {
+        echo $a . PHP_EOL;
+        echo $b . PHP_EOL;
+        echo $c . PHP_EOL;
+
+        var_dump(\App\App::getRouter()->getRoute()->getRegex());
+    }
+
 }

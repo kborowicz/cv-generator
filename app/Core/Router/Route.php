@@ -2,27 +2,33 @@
 
 namespace App\Core\Router;
 
-//TODO trzeba dorobić coś w stylu kolejności bo może sie zdarzyc sytuacja:
-// route: /login        => controller od logowania
-// route: /{project}    => controller od projektów
-//TODO wtedy trzeba wybrać w jakiej kolejności zrobić przeszukiwanie
-
+//TODO 
 
 class Route {
+
+    protected static string $PREFIX = '';
+
+    protected static string $DEFAULT_VARIABLE_REGEX = '/\{([a-zA-Z0-9]+)\}/';
+
+    protected static string $CUSTOM_VARIABLE_REGEX = '/\{([a-zA-Z0-9]+):?([^\}]+)?\}/';
 
     protected string $name;
 
     protected string $pattern;
-
-    protected int $paramsCount;
 
     protected string $regex;
 
     protected string $controller;
 
     protected string $action;
-    
-    protected array $defaults;
+
+    protected string $redirect;
+
+    protected array $methods = ['post', 'get', 'put', 'head'];
+
+    protected array $parameters = [];
+
+    protected array $defaults = [];
 
     public function __construct(string $name, string $pattern) {
         $this->setName($name);
@@ -35,7 +41,7 @@ class Route {
 
     public function setName(string $name) : self {
         if(empty($name)) {
-            throw new \Exception('Route name cannot be empty');
+            throw new \Exception('Name cannot be empty');
         }
 
         $this->name = $name;
@@ -48,23 +54,34 @@ class Route {
 
     public function setPattern(string $pattern) : self {
         if(empty($pattern)) {
-            throw new \Exception('Route pattern cannot be empty');
+            throw new \Exception('Pattern cannot be empty');
         }
 
-        //TODO porobic zabezpieczenia ze znakami unikalnymi z regexa zeby np mozna bylo uzywac kropki
+        // Split pattern by parameter regex
+        preg_match_all(self::$CUSTOM_VARIABLE_REGEX, $pattern, $matches);
+        $urlParts = preg_split(self::$CUSTOM_VARIABLE_REGEX, $pattern);
 
-        $this->pattern = $pattern;
+        // Validate pattern
+        if(count($urlParts) - 1 != count($matches[0])) {
+            throw new \Exception('Invalid pattern');
+        }
 
-        $this->regex = rtrim($pattern, '/') . '/?';
-        //Convert the route to a regular expression: escape forward slashes
-        $this->regex = preg_replace('/\//', '\\/', $this->regex);
-        // Convert variables e.g. {controller}
-        $this->regex = preg_replace('/\{([a-zA-Z]+)\}/', '(?<\1>[a-zA-Z0-9_.~\-]+)', $this->regex);
-        // Convert variables with custom regular expressions e.g. {id:\d+}
-        $this->regex = preg_replace('/\{([a-zA-Z]+):([^\}]+)\}/', '(?<\1>\2)', $this->regex);
-        // Add start and end delimiters, and case insensitive flag
-        $this->regex = '/^' . $this->regex . '$/i';
-        
+        $this->pattern = preg_replace(self::$CUSTOM_VARIABLE_REGEX, '{\1}', $pattern);
+        $this->regex = '';
+
+        // Build regex and parameters array
+        for($i = 0; $i < count($matches[0]); $i++) {
+            $parameterName = $matches[1][$i];
+            $parameterRegex = !empty($matches[2][$i]) ? $matches[2][$i] : '[a-zA-Z0-9._=+#\-\^]+';
+
+            $this->parameters[$parameterName] = $parameterRegex;
+            $this->regex .= preg_quote($urlParts[$i], '/') . "(?<$parameterName>$parameterRegex)";
+        }
+
+        $this->regex .= preg_quote($urlParts[count($urlParts) - 1]);
+        $this->regex = rtrim($this->regex, '\/') . '\/?';
+        $this->regex = '/^' . $this->regex . '$/';
+
         return $this;
     }
 
@@ -94,9 +111,67 @@ class Route {
         return $this->defaults;
     }
 
+    private function canBeString($value) : bool {
+        return is_scalar($value) || (is_object($value) && method_exists($value, '__toString'));
+    }
+
     public function setDefaults(array $defaults) : self {
+        foreach ($defaults as $key => $value) {
+            if(array_key_exists($key, $this->parameters)) {
+                if(!$this->canBeString($value)) {
+                    throw new \Exception("Default value of '$key' cannot be converted to string");
+                }
+                
+                if(!preg_match('/'. $this->parameters[$key] . '/', (string) $value)) {
+                    throw new \Exception("Default value of '$key' does not match the regex pattern");
+                }
+            } else {
+                throw new \Exception("Parameter '$key' is not present in pattern");
+            }
+        }
+
         $this->defaults = $defaults;
         return $this;
+    }
+
+    public function getUrl($parameters = [], $absolute = false) {
+        $absolutePrefix = '';
+
+        if($absolute) {
+            if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+                $absolutePrefix .= 'https://' . $_SERVER['HTTP_HOST'];
+            } else {
+                $absolutePrefix .= 'http://' . $_SERVER['HTTP_HOST'];
+            }
+        }
+
+        if(count($this->parameters) == 0) {
+            return $absolutePrefix . self::$PREFIX . $this->pattern;
+        }
+
+        $replacePairs = [];
+
+        foreach($this->parameters as $param => $pattern) {
+            if(array_key_exists($param, $parameters)) {
+                if(preg_match('/' . $pattern . '/', $parameters[$param])) {
+                    $replacePairs['{' . $param . '}'] = $parameters[$param];
+                } else {
+                    throw new \Exception("Value of '$param' does not match the regex pattern");
+                }
+            } else if(array_key_exists($param, $this->defaults)) {
+                $replacePairs['{' . $param . '}'] = $this->defaults[$param];
+            } else {
+                throw new \Exception("Parameter '$param' is required, but not found in parameters array");
+            }
+        }
+
+        if(count($replacePairs) != count($this->parameters)) {
+            throw new \Exception('Too few parameters');
+        }
+
+        $url = strtr($this->pattern, $replacePairs);
+
+        return $absolutePrefix . self::$PREFIX . $url;
     }
 
     public function matches($url) {
@@ -105,38 +180,8 @@ class Route {
         return $matches ?? false;
     }
 
-    //TODO zoptymalizować, np nie wykonywać regexów jeżeli liczba parametrów jest 0
-    public function getUrl($params = []) {
-        $url = $this->pattern;
-
-        preg_match_all('/\{([a-zA-Z]+)\}/', $this->pattern, $matches);
-        if($matches) {
-            foreach($matches[1] as $index => $groupMatch) {
-                if(array_key_exists($groupMatch, $params)) {
-                    $url = str_replace($matches[0][$index], $params[$groupMatch], $url);
-                } else {
-                    //TODO sprawdzanie wartości domyślnych ?
-                }
-            }
-        }
-
-        preg_match_all('/\{([a-zA-Z]+):([^\}]+)\}/', $this->pattern, $matches);
-        if($matches) {
-            foreach($matches[1] as $index => $groupMatch) {
-                if(array_key_exists($groupMatch, $params)) {
-                    $url = str_replace($matches[0][$index], $params[$groupMatch], $url);
-                } else {
-                    //TODO sprawdzanie wartości domyślnych ?
-                }
-            }
-        }
-
-        //TODO potem zmienic ten prefix na poprostu roota /
-        if($this->matches($url)) {
-            return '/cv-generator/' . ltrim($url, '/');
-        } else {
-            throw new \Exception("Specified parameters do not match route pattern ($url)");
-        }
+    public static function setPrefix(string $prefix) {
+        self::$PREFIX = '/' . trim($prefix, '/') . '/';
     }
 
 }

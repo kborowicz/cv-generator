@@ -68,11 +68,11 @@ class View {
             return 'File not found';
         }
 
-        return PUBLIC__RELATIVE_DIR . $name . '?' . rand();
+        return PUBLIC_RELATIVE_DIR . $name . '?' . rand();
     }
 
-    public function route(string $name, $params = []) {
-        return \App\App::getRouter()->getRoutes()->get($name)->getUrl($params);
+    public function route(string $name, $params = [], $absolute = false) {
+        return \App\App::getRouter()->getRoutes()->get($name)->getUrl($params, $absolute);
     }
 
     public function csrfToken() {
