@@ -17,6 +17,10 @@ class Router {
     }
 
     public function matches($url) {
+        //TODO Wywalić błąd o konflikcie pomiędzy wyrażeniami regularnymi dla różnych ścieżek np:
+        //TODO /login/new/
+        //TODO /login/{userId:\d+}/
+
         foreach($this->routes->getAll() as $route) {
             if($params = $route->matches($url)) {
                 $this->route = $route;
@@ -39,11 +43,12 @@ class Router {
         if($this->matches($url)) {
             if(!empty($this->route->getController())) {
                 $this->processController();
+            } else {
+                throw new \Exception('Controller class is not defined');
             }
         } else {
-            //TODO dorobic cos w rodzaju domyślnej ścieżki tzn {controller}/{action}/... params 
-            //TODO Jeżeli sciezka i tak nie zostanie znaleziona to przekierowanie zdefiniowane w route (jeszcze nie zrobione) albo 404
-            throw new \Exception('No match 404');
+            http_response_code(404);
+            exit;
         }
     }
 
@@ -53,26 +58,23 @@ class Router {
             $controller = new $controllerClass();
             $action = $this->route->getAction();
 
-            if(!empty($action)) {
-                if(method_exists($controller, $action) && is_callable([$controller, $action])) {
-                    //TODO posortować kolejność argumentów przed call user func array (użyć ReflectionMethod)
-                    $controller->before($action);
-                    $result = call_user_func_array([$controller, $action], $this->params);
+            if(empty($action)) {
+                throw new \Exception('Action is not defined');
+            }
 
-                    if($result instanceof Response) {
-                        $result->send();
-                    }
-                } else {
-                    throw new \Exception("Method '$action' does not exist");
-                    //TODO 404 albo przekierowanie zdefiniowane w route
+            if(method_exists($controller, $action) && is_callable([$controller, $action])) {
+                //TODO posortować kolejność argumentów przed call user func array (użyć ReflectionMethod)
+                $controller->before($action);
+                $result = call_user_func_array([$controller, $action], $this->params);
+
+                if($result instanceof Response) {
+                    $result->send();
                 }
             } else {
-                throw new \Exception('action not defined');
-                //TODO 404 albo przekierowanie zdefiniowane w route
+                throw new \Exception("Method '$controller:$action' does not exist");
             }
         } else {
-            throw new \Exception("Controller class '" 
-                . $this->route->getController() . "' does not exist");
+            throw new \Exception("Controller class '" . $this->route->getController() . "' does not exist");
         }
     }
 

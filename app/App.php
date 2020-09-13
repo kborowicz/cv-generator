@@ -14,11 +14,9 @@ final class App {
     private static EntityManager $entityManager;
 
     private function __construct() {
-        // Singleton cannot be instantiated
     }
 
     private function __clone() { 
-        // Singleton cannot be cloned
     }
 
     public static function start() {

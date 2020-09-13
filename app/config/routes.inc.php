@@ -27,7 +27,7 @@ $routes->add('home', "/")
     ->setController(\App\Controller\HomeController::class)
     ->setAction('home');
 
-$routes->add('generate', "generate/{id}/")
+$routes->add('generate', "generate/{name}.{lastname}.{id}/")
     ->setController(\App\Controller\HomeController::class)
     ->setAction('generateCV');
 

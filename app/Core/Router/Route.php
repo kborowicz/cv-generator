@@ -2,13 +2,9 @@
 
 namespace App\Core\Router;
 
-//TODO 
-
 class Route {
 
     protected static string $PREFIX = '';
-
-    protected static string $DEFAULT_VARIABLE_REGEX = '/\{([a-zA-Z0-9]+)\}/';
 
     protected static string $CUSTOM_VARIABLE_REGEX = '/\{([a-zA-Z0-9]+):?([^\}]+)?\}/';
 
@@ -57,16 +53,19 @@ class Route {
             throw new \Exception('Pattern cannot be empty');
         }
 
+        $pattern = trim($pattern, '/');
+        $variableRegex = '/\{([a-zA-Z0-9]+):?([^\}]+)?\}/';
+
         // Split pattern by parameter regex
-        preg_match_all(self::$CUSTOM_VARIABLE_REGEX, $pattern, $matches);
-        $urlParts = preg_split(self::$CUSTOM_VARIABLE_REGEX, $pattern);
+        preg_match_all($variableRegex, $pattern, $matches);
+        $urlParts = preg_split($variableRegex, $pattern);
 
         // Validate pattern
         if(count($urlParts) - 1 != count($matches[0])) {
             throw new \Exception('Invalid pattern');
         }
 
-        $this->pattern = preg_replace(self::$CUSTOM_VARIABLE_REGEX, '{\1}', $pattern);
+        $this->pattern = preg_replace($variableRegex, '{\1}', $pattern);
         $this->regex = '';
 
         // Build regex and parameters array
@@ -146,7 +145,7 @@ class Route {
         }
 
         if(count($this->parameters) == 0) {
-            return $absolutePrefix . self::$PREFIX . $this->pattern;
+            return $absolutePrefix . '/' . self::$PREFIX . '/' . $this->pattern;
         }
 
         $replacePairs = [];
@@ -171,7 +170,7 @@ class Route {
 
         $url = strtr($this->pattern, $replacePairs);
 
-        return $absolutePrefix . self::$PREFIX . $url;
+        return $absolutePrefix . '/' . self::$PREFIX . '/' . $url;
     }
 
     public function matches($url) {
@@ -181,7 +180,7 @@ class Route {
     }
 
     public static function setPrefix(string $prefix) {
-        self::$PREFIX = '/' . trim($prefix, '/') . '/';
+        self::$PREFIX = trim($prefix, '/');
     }
 
 }

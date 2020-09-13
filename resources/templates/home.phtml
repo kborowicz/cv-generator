@@ -11,7 +11,11 @@
                     onclick="document.location.href='<?=$this->route('logout')?>'">log out</button>
                 <button type="button" class="btn btn--light" id="js-save-btn">save</button>
                 <button type="submit" class="btn" id="js-submit-btn"
-                    onclick="window.open('<?=$this->route('generate', ['id' => $this->user->getId()])?>', '_blank')">generate CV</button>
+                    onclick="window.open('<?=$this->route('generate', [
+                        'id' => $this->user->getId(),
+                        'name' => strtolower($this->user->getName()),
+                        'lastname' => strtolower($this->user->getLastname())
+                    ])?>', '_blank')">generate CV</button>
             </div>
         </nav>
         <div class="main__data-group">

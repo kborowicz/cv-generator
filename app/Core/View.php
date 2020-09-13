@@ -96,7 +96,6 @@ class View {
             $line = $backtrace['line'];
 
             echo "<p style='color: red'><b>{Undefined variable '$name'</b> ($file:$line)}</p>";
-            //TODO można to zamienić na zwykłego error (exception)
             
             return null;
         } else {
