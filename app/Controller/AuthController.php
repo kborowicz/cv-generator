@@ -26,17 +26,13 @@ class AuthController extends Controller {
     public function login() {
         $this->view = new View('login.phtml', [
             'pageTitle' => 'CV Generator | Log in',
-            'topnavBg'  => '#343a40',
+            'topnavBg'  => '#ffffff',
         ]);
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $this->actionLogin();
-        } else {
-            $this->view->render();
-        }
+        $this->view->render();
     }
 
-    public function actionLogin() {
+    public function processLogin() {
         if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
             $this->redirectTo('login');
         }
@@ -95,14 +91,10 @@ class AuthController extends Controller {
             'topnavBg'  => '#343a40',
         ]);
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $this->actionSignup();
-        } else {
-            $this->view->render();
-        }
+        $this->view->render();
     }
 
-    public function actionSignup() {
+    public function processSignup() {
         if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
             $this->redirectTo('signup');
         }

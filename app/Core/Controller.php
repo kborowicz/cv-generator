@@ -10,7 +10,7 @@ class Controller {
      * @param [type] $action
      * @return void
      */
-    public function before($action): void {}
+    public function before($action): void { }
 
     protected function redirectTo($routeName, $params = []) {
         $route = \App\App::getRouter()->getRoutes()->get($routeName);

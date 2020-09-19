@@ -27,7 +27,7 @@ class HomeController extends Controller {
 
             $this->view = new View('home.phtml', [
                 'pageTitle' => 'CV Generator | ' . $this->user->getFullName(),
-                'topnavBg'  => '#343a40',
+                'topnavBg'  => '#ffffff',
                 'user'      => $this->user,
             ]);
         } else {
@@ -39,7 +39,7 @@ class HomeController extends Controller {
         $this->view->render();
     }
 
-    public function generateCV($name, $lastname, $id = 4) {
+    public function generateCV($id) {
         if($id != $this->user->getId()) {
             $this->redirectTo('home');
         }

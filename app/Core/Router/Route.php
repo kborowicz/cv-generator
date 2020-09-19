@@ -2,54 +2,53 @@
 
 namespace App\Core\Router;
 
-class Route {
+final class Route {
 
-    protected static string $PREFIX = '';
+    private static array $METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
-    protected static string $CUSTOM_VARIABLE_REGEX = '/\{([a-zA-Z0-9]+):?([^\}]+)?\}/';
+    private static string $PREFIX = '';
 
-    protected string $name;
+    private string $name;
 
-    protected string $pattern;
+    private string $pattern;
 
-    protected string $regex;
+    private string $regex;
 
-    protected string $controller;
+    private array $methods = [];
 
-    protected string $action;
+    private array $parameters = [];
 
-    protected string $redirect;
+    private array $defaults = [];
 
-    protected array $methods = ['post', 'get', 'put', 'head'];
-
-    protected array $parameters = [];
-
-    protected array $defaults = [];
-
-    public function __construct(string $name, string $pattern) {
+    public function __construct(string $name, string $pattern, array $methods = null) {
         $this->setName($name);
         $this->setPattern($pattern);
+
+        if($methods) {
+            $this->setMethods($methods);
+        }
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return $this->name;
     }
 
-    public function setName(string $name) : self {
-        if(empty($name)) {
+    public function setName(string $name): self {
+        if (empty($name)) {
             throw new \Exception('Name cannot be empty');
         }
 
         $this->name = $name;
+
         return $this;
     }
 
-    public function getPattern() : string {
+    public function getPattern(): string {
         return $this->pattern;
     }
 
-    public function setPattern(string $pattern) : self {
-        if(empty($pattern)) {
+    public function setPattern(string $pattern): self {
+        if (empty($pattern)) {
             throw new \Exception('Pattern cannot be empty');
         }
 
@@ -61,7 +60,7 @@ class Route {
         $urlParts = preg_split($variableRegex, $pattern);
 
         // Validate pattern
-        if(count($urlParts) - 1 != count($matches[0])) {
+        if (count($urlParts) - 1 != count($matches[0])) {
             throw new \Exception('Invalid pattern');
         }
 
@@ -70,7 +69,7 @@ class Route {
         $this->regex = '';
 
         // Build regex and parameters array
-        for($i = 0; $i < count($matches[0]); $i++) {
+        for ($i = 0; $i < count($matches[0]); $i++) {
             $parameterName = $matches[1][$i];
             $parameterRegex = !empty($matches[2][$i]) ? $matches[2][$i] : '[a-zA-Z0-9._=+#\-\^]+';
 
@@ -85,44 +84,66 @@ class Route {
         return $this;
     }
 
-    public function getRegex() : string {
+    public function getRegex(): string {
         return $this->regex;
     }
 
-    public function getController() : string {
-        return $this->controller;
+    public function getMethods() {
+        return $this->methods;
     }
 
-    public function setController(string $controller) : self {
-        $this->controller = $controller;
+    public function setMethod(string $method, string $controller, string $action) {
+        $method = strtoupper($method);
+
+        if(!in_array($method, self::$METHODS)) {
+            if($method == 'ANY') {
+                foreach(self::$METHODS as $method) {
+                    $this->methods[$method] = [
+                        'controller' => $controller,
+                        'action' => $action
+                    ];
+                }
+            } else {
+                throw new \Exception("Uknnown request method '$method'");
+            }
+        } else if(empty($controller)) {
+            throw new \Exception('Controller class name cannot be empty');
+        } else if(empty($action)) {
+            throw new \Exception('Controller action name cannot be empty');
+        }
+
+        $this->methods[$method] = [
+            'controller' => $controller,
+            'action' => $action
+        ];
+
         return $this;
     }
 
-    public function getAction() : string {
-        return $this->action;
-    }
+    public function setMethods(array $methods) {
+        foreach ($methods as $method => $settings) {
+            $this->setMethod($method, $settings['controller'] ?? null, $settings['action'] ?? null);
+        }
 
-    public function setAction(string $action) : self {
-        $this->action = $action;
         return $this;
     }
 
-    public function getDefaults() : array {
-        return $this->defaults;
-    }
-
-    private function canBeString($value) : bool {
+    private function canBeString($value): bool {
         return is_scalar($value) || (is_object($value) && method_exists($value, '__toString'));
     }
 
-    public function setDefaults(array $defaults) : self {
+    public function getDefaults(): array{
+        return $this->defaults;
+    }
+
+    public function setDefaults(array $defaults): self {
         foreach ($defaults as $key => $value) {
-            if(array_key_exists($key, $this->parameters)) {
-                if(!$this->canBeString($value)) {
+            if (array_key_exists($key, $this->parameters)) {
+                if (!$this->canBeString($value)) {
                     throw new \Exception("Default value of '$key' cannot be converted to string");
                 }
-                
-                if(!preg_match('/'. $this->parameters[$key] . '/', (string) $value)) {
+
+                if (!preg_match('/' . $this->parameters[$key] . '/', (string) $value)) {
                     throw new \Exception("Default value of '$key' does not match the regex pattern");
                 }
             } else {
@@ -131,41 +152,42 @@ class Route {
         }
 
         $this->defaults = $defaults;
+
         return $this;
     }
 
     public function getUrl($parameters = [], $absolute = false) {
         $absolutePrefix = '';
 
-        if($absolute) {
-            if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        if ($absolute) {
+            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
                 $absolutePrefix .= 'https://' . $_SERVER['HTTP_HOST'];
             } else {
                 $absolutePrefix .= 'http://' . $_SERVER['HTTP_HOST'];
             }
         }
 
-        if(count($this->parameters) == 0) {
+        if (count($this->parameters) == 0) {
             return $absolutePrefix . '/' . self::$PREFIX . '/' . $this->pattern;
         }
 
         $replacePairs = [];
 
-        foreach($this->parameters as $param => $pattern) {
-            if(array_key_exists($param, $parameters)) {
-                if(preg_match('/' . $pattern . '/', $parameters[$param])) {
+        foreach ($this->parameters as $param => $pattern) {
+            if (array_key_exists($param, $parameters)) {
+                if (preg_match('/' . $pattern . '/', $parameters[$param])) {
                     $replacePairs['{' . $param . '}'] = $parameters[$param];
                 } else {
                     throw new \Exception("Value of '$param' does not match the regex pattern");
                 }
-            } else if(array_key_exists($param, $this->defaults)) {
+            } else if (array_key_exists($param, $this->defaults)) {
                 $replacePairs['{' . $param . '}'] = $this->defaults[$param];
             } else {
                 throw new \Exception("Parameter '$param' is required, but not found in parameters array");
             }
         }
 
-        if(count($replacePairs) != count($this->parameters)) {
+        if (count($replacePairs) != count($this->parameters)) {
             throw new \Exception('Too few parameters');
         }
 

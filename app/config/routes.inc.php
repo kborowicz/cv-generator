@@ -1,65 +1,46 @@
 <?php
 
-use App\Core\Router\RouteCollection;
 use App\Core\Router\Route;
+use App\Controller\AuthController;
+use App\Controller\HomeController;
+use App\Core\Router\RouteCollection;
 
-Route::setPrefix('cv-generator');
-
+Route::setPrefix('cv-generator'); //TODO stworzyć rozwiązanie globalne, tzn dla kazdej klasy. Może dodać consta ?
 $routes = new RouteCollection();
 
-/*************************/
-/****** Auth routes ******/
-/*************************/
+/* Auth routes */
 
 $routes->add('login', "login/")
-->setController(\App\Controller\AuthController::class)
-->setAction('login');
+->setMethod('GET', AuthController::class, 'login')
+->setMethod('POST', AuthController::class, 'processLogin');
 
 $routes->add('signup', "signup/")
-->setController(\App\Controller\AuthController::class)
-->setAction('signup');
+->setMethod('GET', AuthController::class, 'signup')
+->setMethod('POST', AuthController::class, 'processLogin');
 
 $routes->add('logout', "logout/")
-->setController(\App\Controller\AuthController::class)
-->setAction('logout');
+->setMethod('GET', AuthController::class, 'logout');
 
-/*************************/
-/****** Home routes ******/
-/*************************/
+/* Home routes */
 
 $routes->add('home', "/")
-->setController(\App\Controller\HomeController::class)
-->setAction('home');
+->setMethod('ANY', HomeController::class, 'home');
 
-$routes->add('generate', "generate/{lastname}.{name}.{id}/")
-->setController(\App\Controller\HomeController::class)
-->setAction('generateCV');
-
-$routes->add('ajax-save-data', "save-data/")
-->setController(\App\Controller\HomeController::class)
-->setAction('saveData');
-
-$routes->add('ajax-get-data', "get-data/")
-->setController(\App\Controller\HomeController::class)
-->setAction('getData');
-
-$routes->add('ajax-upload-image', "upload-image/")
-->setController(\App\Controller\HomeController::class)
-->setAction('uploadImage');
+$routes->add('generate', "generate/{name}.{lastname}.{id}/")
+->setMethod('GET', HomeController::class, 'generateCV');
 
 $routes->add('open-image', "image/{imageFile}/")
-->setController(\App\Controller\HomeController::class)
-->setAction('openImage');
+->setMethod('GET', HomeController::class, 'openImage');
 
-// $routes->add('generate', [
-//     'controller' => \App\Controller\HomeController::class,
-//     'action'     => 'openImage',
-//     'pattern'    => 'generate/{id}',
-//     'redirect'   => 'home',
-//     'methods'    => ['post', 'get'],
-//     'defaults'   => [
-//         'id' => 10,
-//     ],
-// ]);
+/* Home AJAX routes */
+
+$routes->add('ajax-save-data', "save-data/")
+->setMethod('POST', HomeController::class, 'saveData');
+
+$routes->add('ajax-get-data', "get-data/")
+->setMethod('GET', HomeController::class, 'getData');
+
+$routes->add('ajax-upload-image', "upload-image/")
+->setMethod('POST', HomeController::class, 'uploadImage');
 
 return $routes;

@@ -13,11 +13,9 @@ final class App {
 
     private static EntityManager $entityManager;
 
-    private function __construct() {
-    }
+    private function __construct() { }
 
-    private function __clone() { 
-    }
+    private function __clone() { }
 
     public static function start() {
         if(isset(self::$instance)) {

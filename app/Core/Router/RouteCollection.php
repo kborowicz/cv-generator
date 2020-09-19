@@ -6,12 +6,12 @@ class RouteCollection {
 
     protected $routes = [];
 
-    public function add(string $name, string $pattern) : Route {
+    public function add(string $name, string $pattern, $methods = null) : Route {
         if($this->contains($name)) {
             throw new \Exception("Route with name '$name' already exists");
         }
 
-        $route = new Route($name, $pattern);
+        $route = new Route($name, $pattern, $methods);
         $this->routes[$name] = $route;
 
         return $route;
@@ -39,6 +39,10 @@ class RouteCollection {
 
     public function getAll() : array {
         return $this->routes;
+    }
+    
+    public function print() : void {
+        //TODO 
     }
 
 }

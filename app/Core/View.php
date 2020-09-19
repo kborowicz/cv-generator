@@ -96,7 +96,6 @@ class View {
             $line = $backtrace['line'];
 
             echo "<p style='color: red'><b>{Undefined variable '$name'</b> ($file:$line)}</p>";
-            
             return null;
         } else {
             return $this->data[$name];

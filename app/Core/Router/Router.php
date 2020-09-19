@@ -18,53 +18,33 @@ class Router {
         $this->routes = $routes;
     }
 
-    //TODO Wyrzucić sprawdzanie konfliktów pomiędzy ścieżkami
     public function matches($url) {
-        $matches = [];
-
         foreach($this->routes->getAll() as $route) {
             if($parameters = $route->matches($url)) {
-                $matches[] = [
-                    'route' => $route,
-                    'parameters' => array_filter($parameters, function($key) { 
-                        return is_string($key);
-                    })
-                ];
-            }
-        }
-
-        $matchesCount = count($matches);
-
-        if($matchesCount > 0) {
-            if($matchesCount == 1) {
-                $this->route = $matches[0]['route'];
-                $this->parameters = $matches[0]['parameters'];
+                $this->route = $route;
+                $this->parameters = array_filter($parameters, function($key) { 
+                    return is_string($key);
+                });
 
                 return true;
-            } else {
-                $routes = implode(', ', array_map(function ($match) {
-                    return "'" . $match['route']->getName() . "'";
-                }, $matches));
-                throw new \Exception("Routes conflict, $matchesCount routes 
-                    matches specified url ($routes)");
             }
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public function run($url) {
         if($this->matches($url)) {
-            $controllerClass = $this->route->getController();
-            $controllerAction = $this->route->getAction();
+            $requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
 
-            if(empty($controllerClass)) {
-                throw new \Exception('Controller class is not defined');
+            if(!array_key_exists($requestMethod, $this->route->getMethods())) {
+                http_response_code(404);
+                exit;
             }
 
-            if(empty($controllerAction)) {
-                throw new \Exception('Controller action is not defined');
-            }
+            $methodSettings = $this->route->getMethods()[$requestMethod];
+            $controllerClass = $methodSettings['controller'];
+            $controllerAction = $methodSettings['action'];
 
             $this->processController($controllerClass, $controllerAction);
         } else {
