@@ -9,6 +9,19 @@ const hash = require('gulp-hash');
 const iconfont = require('gulp-iconfont');
 const iconfontCss = require('gulp-iconfont-css');
 
+gulp.task('hash', function() {
+    return gulp.src('public/**/*.css')
+        .pipe(hash({
+            template: '<%= name %>--<%= hash %><%= ext %>'
+        })) // Add hashes to the files' names
+        .pipe(gulp.dest('public/')) // Write the renamed files
+        .pipe(hash.manifest('public/manifest.json', { // Generate the manifest file
+            deleteOld: true,
+            sourceDir: 'public/'
+        }))
+        .pipe(gulp.dest('.')); // Write the manifest file (see note below)
+});
+
 gulp.task('sass', function() {
     return gulp.src('resources/scss/**/*.scss')
         .pipe(sass({

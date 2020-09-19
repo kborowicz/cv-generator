@@ -39,7 +39,7 @@ class HomeController extends Controller {
         $this->view->render();
     }
 
-    public function generateCV($name, $lastname, $id) {
+    public function generateCV($name, $lastname, $id = 4) {
         if($id != $this->user->getId()) {
             $this->redirectTo('home');
         }

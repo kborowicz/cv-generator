@@ -3,6 +3,8 @@
 namespace App\Core\Router;
 
 use \App\Core\Http\Response;
+use \App\Core\Controller;
+use BadMethodCallException;
 
 class Router {
 
@@ -10,71 +12,99 @@ class Router {
 
     private Route $route;
 
-    private array $params = [];
+    private array $parameters;
 
     public function __construct(RouteCollection $routes) {
         $this->routes = $routes;
     }
 
+    //TODO Wyrzucić sprawdzanie konfliktów pomiędzy ścieżkami
     public function matches($url) {
-        //TODO Wywalić błąd o konflikcie pomiędzy wyrażeniami regularnymi dla różnych ścieżek np:
-        //TODO /login/new/
-        //TODO /login/{userId:\d+}/
+        $matches = [];
 
         foreach($this->routes->getAll() as $route) {
-            if($params = $route->matches($url)) {
-                $this->route = $route;
-                $this->params = [];
-
-                foreach ($params as $key => $value) {
-                    if(is_string($key)) {
-                        $this->params[$key] = $value;
-                    }
-                }
-
-                return true;
+            if($parameters = $route->matches($url)) {
+                $matches[] = [
+                    'route' => $route,
+                    'parameters' => array_filter($parameters, function($key) { 
+                        return is_string($key);
+                    })
+                ];
             }
         }
 
-        return false;
+        $matchesCount = count($matches);
+
+        if($matchesCount > 0) {
+            if($matchesCount == 1) {
+                $this->route = $matches[0]['route'];
+                $this->parameters = $matches[0]['parameters'];
+
+                return true;
+            } else {
+                $routes = implode(', ', array_map(function ($match) {
+                    return "'" . $match['route']->getName() . "'";
+                }, $matches));
+                throw new \Exception("Routes conflict, $matchesCount routes 
+                    matches specified url ($routes)");
+            }
+        } else {
+            return false;
+        }
     }
 
     public function run($url) {
         if($this->matches($url)) {
-            if(!empty($this->route->getController())) {
-                $this->processController();
-            } else {
+            $controllerClass = $this->route->getController();
+            $controllerAction = $this->route->getAction();
+
+            if(empty($controllerClass)) {
                 throw new \Exception('Controller class is not defined');
             }
+
+            if(empty($controllerAction)) {
+                throw new \Exception('Controller action is not defined');
+            }
+
+            $this->processController($controllerClass, $controllerAction);
         } else {
             http_response_code(404);
             exit;
         }
     }
 
-    private function processController() {
-        if(class_exists($this->route->getController(), true)) {
-            $controllerClass = $this->route->getController();
-            $controller = new $controllerClass();
-            $action = $this->route->getAction();
+    private function processController($class, $action) {
+        if(class_exists($class, true)) {
+            $controller = new $class();
 
-            if(empty($action)) {
-                throw new \Exception('Action is not defined');
+            if(!($controller instanceof Controller)) {
+                throw new \Exception('Controller must be an instance of \App\Core\Controller class');
             }
 
-            if(method_exists($controller, $action) && is_callable([$controller, $action])) {
-                //TODO posortować kolejność argumentów przed call user func array (użyć ReflectionMethod)
-                $controller->before($action);
-                $result = call_user_func_array([$controller, $action], $this->params);
-
-                if($result instanceof Response) {
-                    $result->send();
+            $reflectionMethod = new \ReflectionMethod($controller, $action);
+            $givenParameters = $this->parameters;
+            $sortedParameters = array_map(function($param) use ($givenParameters) {
+                $name = $param->getName();
+                
+                if(array_key_exists($name, $givenParameters)) {
+                    return $givenParameters[$name];
+                } else {
+                    if($param->isOptional()) {
+                        return $param->getDefaultValue();
+                    } else {
+                        throw new BadMethodCallException("Argument '$name' is mandatory");
+                    }
                 }
-            } else {
-                throw new \Exception("Method '$controller:$action' does not exist");
+            }, $reflectionMethod->getParameters());
+
+            $controller->before($action);
+            $result = $reflectionMethod->invokeArgs($controller, $sortedParameters);
+
+            if($result instanceof Response) {
+                $result->send();
             }
         } else {
-            throw new \Exception("Controller class '" . $this->route->getController() . "' does not exist");
+            throw new \Exception("Controller class '$class' does not exist");
         }
     }
 

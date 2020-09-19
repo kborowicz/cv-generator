@@ -54,7 +54,7 @@ class Route {
         }
 
         $pattern = trim($pattern, '/');
-        $variableRegex = '/\{([a-zA-Z0-9]+):?([^\}]+)?\}/';
+        $variableRegex = '/\{([a-zA-Z0-9]+):?([^\}]+)?\}/'; //e.g. /page1/page2/{a}/{b:\d+}
 
         // Split pattern by parameter regex
         preg_match_all($variableRegex, $pattern, $matches);
@@ -65,6 +65,7 @@ class Route {
             throw new \Exception('Invalid pattern');
         }
 
+        // Remove custom regex from pattern string: {a:[abc]+}, {b:\d+} => {a}, {b}
         $this->pattern = preg_replace($variableRegex, '{\1}', $pattern);
         $this->regex = '';
 
@@ -77,7 +78,7 @@ class Route {
             $this->regex .= preg_quote($urlParts[$i], '/') . "(?<$parameterName>$parameterRegex)";
         }
 
-        $this->regex .= preg_quote($urlParts[count($urlParts) - 1]);
+        $this->regex .= preg_quote($urlParts[count($urlParts) - 1], '/');
         $this->regex = rtrim($this->regex, '\/') . '\/?';
         $this->regex = '/^' . $this->regex . '$/';
 

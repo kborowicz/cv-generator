@@ -124,6 +124,7 @@ $main-width: 650px;
 }
 
 .row {
+    display: -moz-box;
     display: flex;
     margin-top: 15px;
 
