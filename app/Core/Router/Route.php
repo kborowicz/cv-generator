@@ -203,7 +203,7 @@ final class Route {
     }
 
     public static function setPrefix(string $prefix) {
-        self::$PREFIX = trim($prefix, '/');
+        self::$PREFIX = trim($prefix, '/\\');
     }
 
 }

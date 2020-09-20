@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Core\View;
 use App\Core\Controller;
 use App\Model\Entity\User;
+use App\Service\Form\Form;
 use Doctrine\ORM\ORMException;
 
 class AuthController extends Controller {
@@ -12,21 +13,31 @@ class AuthController extends Controller {
     public function before($action): void {
         session_start();
 
-        if($action !== 'logout') {
+        if ($action !== 'logout') {
             if (isset($_SESSION[USER_ID])) {
                 $this->redirectTo('home');
             }
-    
+
             if (!isset($_SESSION[CSRF_TOKEN])) {
                 $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
             }
         }
+
     }
 
     public function login() {
         $this->view = new View('login.phtml', [
-            'pageTitle' => 'CV Generator | Log in',
             'topnavBg'  => '#ffffff',
+            'pageTitle' => 'CV Generator | Log in',
+        ]);
+
+        $this->view->render();
+    }
+
+    public function signup() {
+        $this->view = new View('signup.phtml', [
+            'topnavBg'  => '#ffffff',
+            'pageTitle' => 'CV Generator | Sign up',
         ]);
 
         $this->view->render();
@@ -37,61 +48,49 @@ class AuthController extends Controller {
             $this->redirectTo('login');
         }
 
-        if (empty($_POST['email'])) {
-            $this->view->render(['emailError' => 'Email is required']);
+        /* Create form */
+        $form = new Form('POST');
+        $loginField = $form->addField('email')->setNotEmpty()->setWithValidEmail();
+        $passwordField = $form->addField('password')->setNotEmpty();
 
-            return;
-        } else if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->view->render([
-                'email'      => $_POST['email'],
-                'emailError' => 'Email is invalid',
-            ]);
+        /* Get user data from database */
+        $entityManager = \App\App::getEntityManager();
+        $usersRepo = $entityManager->getRepository(User::class);
+        $user = $usersRepo->findOneBy(['email' => $form->getValueOf('password')]);
 
-            return;
-        } else if (empty($_POST['password'])) {
-            $this->view->render([
-                'email'         => $_POST['email'],
-                'passwordError' => 'Password is required',
+        /* Add rest of field constraints */
+        $loginField->setWithConstraint(function () use ($user) {
+            if (!$user) {
+                return 'Account does not exist';
+            }
+        });
+
+        $passwordField->setWithConstraint(function ($isEmpty, $name, $value) use ($user) {
+            if ($user && !password_verify($value, $user->getPassword())) {
+                return 'Incorrect password';
+            }
+        });
+
+        /* Validate form fields */
+        if (!$form->validate()) {
+            $view = new View('login.phtml');
+
+            $view->assign([
+                'topnavBg'  => '#ffffff',
+                'pageTitle' => 'CV Generator | Log in',
             ]);
+            $view->assign($form->getFieldValues());
+            $view->assign($form->getErrors());
+            $view->render();
 
             return;
         }
 
-        $em = \App\App::getEntityManager();
-        $usersRepo = $em->getRepository(User::class);
-        $user = $usersRepo->findOneBy(['email' => $_POST['email']]);
-
-        if (!$user) {
-            $this->view->render([
-                'email'      => $_POST['email'],
-                'emailError' => 'Email does not exist',
-            ]);
-
-            return;
-        }
-
-        if (!password_verify($_POST['password'], $user->getPassword())) {
-            $this->view->render([
-                'email'         => $_POST['email'],
-                'passwordError' => 'Incorrect password',
-            ]);
-
-            return;
-        }
-
+        /* Set user session variables and redirect to home page */
         $_SESSION[USER_ID] = $user->getId();
         $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
 
         $this->redirectTo('home');
-    }
-
-    public function signup() {
-        $this->view = new View('signup.phtml', [
-            'pageTitle' => 'CV Generator | Sign up',
-            'topnavBg'  => '#343a40',
-        ]);
-
-        $this->view->render();
     }
 
     public function processSignup() {
@@ -99,98 +98,62 @@ class AuthController extends Controller {
             $this->redirectTo('signup');
         }
 
-        if (empty($_POST['name'])) {
-            $this->view->render(['nameError' => 'Name is required']);
+        $entityManager = \App\App::getEntityManager();
+        $usersRepo = $entityManager->getRepository(User::class);
 
-            return;
-        } else if (empty($_POST['lastname'])) {
-            $this->view->render([
-                'name'          => $_POST['name'],
-                'lastnameError' => 'Lastname is required',
-            ]);
+        /* Create form */
+        $form = new Form('POST');
+        $form->addField('name')->setNotEmpty();
+        $form->addField('lastname')->setNotEmpty();
+        $form->addField('password')->setNotEmpty();
+        $form->addField('password_confirm')->setEqualTo($form->getValueOf('password'), "Passwords must match");
+        $emailField = $form->addField('email')->setWithValidEmail();
+    
+        /* Get users repository */
+        $entityManager = \App\App::getEntityManager();
+        $usersRepo = $entityManager->getRepository(User::class);
 
-            return;
-        } else if (empty($_POST['email'])) {
-            $this->view->render([
-                'name'       => $_POST['name'],
-                'lastname'   => $_POST['lastname'],
-                'emailError' => 'Email is required',
-            ]);
+        /* Add email check */
+        $emailField->setWithConstraint(function ($isEmpty, $name, $value) use ($usersRepo) {
+            if ($usersRepo->findOneBy(['email' => $value])) {
+                return 'Account with this email already exists';
+            }
+        });
 
-            return;
-        } else if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->view->render([
-                'name'       => $_POST['name'],
-                'lastname'   => $_POST['lastname'],
-                'emailError' => 'Email is invalid',
-            ]);
+        /* Validate form fields */
+        if (!$form->validate()) {
+            $view = new View('signup.phtml');
 
-            return;
-        } else if (empty($_POST['password'])) {
-            $this->view->render([
-                'name'          => $_POST['name'],
-                'lastname'      => $_POST['lastname'],
-                'email'         => $_POST['email'],
-                'passwordError' => 'Password is required',
+            $view->assign([
+                'topnavBg'  => '#ffffff',
+                'pageTitle' => 'CV Generator | Sign up',
             ]);
-
-            return;
-        } else if (empty($_POST['password-confirm'])) {
-            $this->view->render([
-                'name'                 => $_POST['name'],
-                'lastname'             => $_POST['lastname'],
-                'email'                => $_POST['email'],
-                'passwordConfirmError' => 'Password confirmation is required',
-            ]);
-
-            return;
-        } else if ($_POST['password'] !== $_POST['password-confirm']) {
-            $this->view->render([
-                'name'                 => $_POST['name'],
-                'lastname'             => $_POST['lastname'],
-                'email'                => $_POST['email'],
-                'passwordConfirmError' => 'Password confirmation failed',
-            ]);
+            $view->assign($form->getFieldValues());
+            $view->assign($form->getErrors());
+            $view->render();
 
             return;
         }
 
-        $em = \App\App::getEntityManager();
-        $usersRepo = $em->getRepository(User::class);
-        $user = $usersRepo->findOneBy(['email' => $_POST['email']]);
-
-        if ($user) {
-            $this->view->render([
-                'name'       => $_POST['name'],
-                'lastname'   => $_POST['lastname'],
-                'emailError' => 'Account with this Email already exists',
-            ]);
-
-            return;
-        }
-
+        /* Create new user and redirect to home page*/
         $user = new User();
-        $user->setEmail($_POST['email']);
-        $user->setName($_POST['name']);
-        $user->setLastname($_POST['lastname']);
-        $user->setPassword(password_hash($_POST['password'], PASSWORD_DEFAULT));
+        $user->setEmail($form->getValueOf('email'));
+        $user->setName($form->getValueOf('name'));
+        $user->setLastname($form->getValueOf('lastname'));
+        $user->setPassword(password_hash($form->getValueOf('password'), PASSWORD_DEFAULT));
         $user->setBirthDate(new \DateTime());
 
         try {
-            $em->persist($user);
-            $em->flush();
+            $entityManager->persist($user);
+            $entityManager->flush();
 
             $_SESSION[USER_ID] = $user->getId();
             $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
 
             $this->redirectTo('home');
         } catch (ORMException $e) {
-            $this->view->render([
-                'name'                 => $_POST['name'],
-                'lastname'             => $_POST['lastname'],
-                'email'                => $_POST['lastname'],
-                'passwordConfirmError' => 'Database error, try again later',
-            ]);
+            echo 'Databse error, try again later';
+            //TODO database error
         }
     }
 

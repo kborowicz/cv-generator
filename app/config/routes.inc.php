@@ -5,7 +5,7 @@ use App\Controller\AuthController;
 use App\Controller\HomeController;
 use App\Core\Router\RouteCollection;
 
-Route::setPrefix('cv-generator'); //TODO stworzyć rozwiązanie globalne, tzn dla kazdej klasy. Może dodać consta ?
+Route::setPrefix('cv-generator');
 $routes = new RouteCollection();
 
 /* Auth routes */
@@ -16,7 +16,7 @@ $routes->add('login', "login/")
 
 $routes->add('signup', "signup/")
 ->setMethod('GET', AuthController::class, 'signup')
-->setMethod('POST', AuthController::class, 'processLogin');
+->setMethod('POST', AuthController::class, 'processSignup');
 
 $routes->add('logout', "logout/")
 ->setMethod('GET', AuthController::class, 'logout');
@@ -34,11 +34,11 @@ $routes->add('open-image', "image/{imageFile}/")
 
 /* Home AJAX routes */
 
-$routes->add('ajax-save-data', "save-data/")
-->setMethod('POST', HomeController::class, 'saveData');
-
 $routes->add('ajax-get-data', "get-data/")
 ->setMethod('GET', HomeController::class, 'getData');
+
+$routes->add('ajax-save-data', "save-data/")
+->setMethod('POST', HomeController::class, 'saveData');
 
 $routes->add('ajax-upload-image', "upload-image/")
 ->setMethod('POST', HomeController::class, 'uploadImage');

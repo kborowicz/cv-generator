@@ -35,10 +35,10 @@
                     <?php endif; ?>
                 </div>
                 <div class="login__row">
-                    <input type="password" name="password-confirm" placeholder="Confirm password" class="form-control form-control--text">
+                    <input type="password" name="password_confirm" placeholder="Confirm password" class="form-control form-control--text">
 
-                    <?php if($this->isset('passwordConfirmError')) : ?>
-                        <span class="error"><?=$this->passwordConfirmError?></span>
+                    <?php if($this->isset('password_confirmError')) : ?>
+                        <span class="error"><?=$this->password_confirmError?></span>
                     <?php endif; ?>
                 </div>
                 <div class="login__row login__row--submit">
