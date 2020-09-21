@@ -22,62 +22,48 @@ class FormField {
         return $this;
     }
 
-    public function getRequired() {
-        return $this->required;
-    }
-
-    public function setRequired($required) {
-        $this->required = $required;
-
-        return $this;
-    }
-
     public function getConstraints() {
         return $this->constraints;
     }
 
-    public function setWithConstraint(callable $constraint) {
+    public function addConstraint(callable $constraint) {
         $this->constraints[] = $constraint;
 
         return $this;
     }
 
-    public function setWithConstraints(array $constraints) {
-        foreach ($constraints as $constraint) {
-            $this->constraints[] = $constraint;
-        }
-
-        return $this;
-    }
-
-    public function setNotEmpty(string $errorMessage = 'Field cannot be empty') {
-        $this->constraints[] = function ($isEmpty, $name, $value) use ($errorMessage) {
-            if ($isEmpty) {
-                return $errorMessage;
-            }
+    public function notEmpty(string $errorMessage = 'This field is required') {
+        $this->constraints[] = function ($value) use ($errorMessage) {
+            if (empty($value)) { return $errorMessage; }
         };
 
         return $this;
     }
 
-    public function setWithValidEmail(string $errorMessage= 'Invalid email adress') {
-        $this->constraints[] = function ($isEmpty, $name, $value) use ($errorMessage) {
-            if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                return $errorMessage;
-            }
+    public function equalTo($toValue, string $errorMessage = 'Fields does not match') {
+        $this->constraints[] = function($value) use ($toValue, $errorMessage) {
+            if($value !== $toValue) { return $errorMessage; }
         };
 
         return $this;
     }
 
-    public function setWithValidDate(string $errorMessage = ' Invalid date format') {
-        $this->constraints[] = function ($isEmpty, $name, $value) use ($errorMessage) {
+    public function filter($filter, string $errorMessage) {
+        $this->constraints[] = function ($value) use ($filter, $errorMessage) {
+            if (!filter_var($value, $filter)) { return $errorMessage; }
         };
+
+        return $this;
     }
 
-    public function setEqualTo($val, string $errorMessage = 'Fields does not match') {
-        $this->constraints[] = function($isEmpty, $name, $value) use ($val, $errorMessage) {
-            if($value !== $val) {
+    public function validEmail(string $errorMessage= 'Invalid email adress') {
+        return $this->filter(FILTER_VALIDATE_EMAIL, $errorMessage);
+    }
+
+    public function validDate(string $format = 'd.m.Y', string $errorMessage = ' Invalid date format') {
+        $this->constraints[] = function ($value) use ($format, $errorMessage) {
+            $date = \DateTime::createFromFormat($format, $value);
+            if(!$date || !$date->format($format) === $value) {
                 return $errorMessage;
             }
         };

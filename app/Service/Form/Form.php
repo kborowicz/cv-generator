@@ -47,11 +47,10 @@ class Form {
     public function validate(string $errorSuffix = 'Error') {
         foreach($this->fields as $field) {
             $name = $field->getName();
-            $isEmpty = empty($this->data[$name]);
-            $value = $isEmpty ? null : $this->data[$name];
+            $value = $this->data[$name] ?? null;
 
             foreach($field->getConstraints() as $constraint) {
-                if($errorMessage = $constraint($isEmpty, $name, $value)) {
+                if($errorMessage = $constraint($value)) {
                     $this->errors[$name . $errorSuffix] = $errorMessage;
                     break;
                 }

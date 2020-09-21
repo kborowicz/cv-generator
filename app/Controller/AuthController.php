@@ -6,6 +6,7 @@ use App\Core\View;
 use App\Core\Controller;
 use App\Model\Entity\User;
 use App\Service\Form\Form;
+use App\Service\Form2\Form as Form2;
 use Doctrine\ORM\ORMException;
 
 class AuthController extends Controller {
@@ -50,22 +51,22 @@ class AuthController extends Controller {
 
         /* Create form */
         $form = new Form('POST');
-        $loginField = $form->addField('email')->setNotEmpty()->setWithValidEmail();
-        $passwordField = $form->addField('password')->setNotEmpty();
+        $loginField = $form->addField('email')->notEmpty()->validEmail();
+        $passwordField = $form->addField('password')->notEmpty();
 
         /* Get user data from database */
         $entityManager = \App\App::getEntityManager();
         $usersRepo = $entityManager->getRepository(User::class);
-        $user = $usersRepo->findOneBy(['email' => $form->getValueOf('password')]);
+        $user = $usersRepo->findOneBy(['email' => $form->getValueOf('email')]);
 
         /* Add rest of field constraints */
-        $loginField->setWithConstraint(function () use ($user) {
+        $loginField->addConstraint(function () use ($user) {
             if (!$user) {
                 return 'Account does not exist';
             }
         });
 
-        $passwordField->setWithConstraint(function ($isEmpty, $name, $value) use ($user) {
+        $passwordField->addConstraint(function ($value) use ($user) {
             if ($user && !password_verify($value, $user->getPassword())) {
                 return 'Incorrect password';
             }
@@ -101,46 +102,36 @@ class AuthController extends Controller {
         $entityManager = \App\App::getEntityManager();
         $usersRepo = $entityManager->getRepository(User::class);
 
-        /* Create form */
-        $form = new Form('POST');
-        $form->addField('name')->setNotEmpty();
-        $form->addField('lastname')->setNotEmpty();
-        $form->addField('password')->setNotEmpty();
-        $form->addField('password_confirm')->setEqualTo($form->getValueOf('password'), "Passwords must match");
-        $emailField = $form->addField('email')->setWithValidEmail();
-    
-        /* Get users repository */
-        $entityManager = \App\App::getEntityManager();
-        $usersRepo = $entityManager->getRepository(User::class);
+        // Create form //TODO csrf token
+        $form2 = new Form2('post');
+        $form2->addField('name')->addRule('required');
+        $form2->addField('lastname')->addRule('required');
+        $form2->addField('email')->addRule('email')
+            ->addRule(function($value) use ($usersRepo) {
+                return $usersRepo->findOneBy(['email' => $value]) != null; //TODO coś tu nie działa
+            }, 'User with this email already exists');
 
-        /* Add email check */
-        $emailField->setWithConstraint(function ($isEmpty, $name, $value) use ($usersRepo) {
-            if ($usersRepo->findOneBy(['email' => $value])) {
-                return 'Account with this email already exists';
-            }
-        });
+        $form2->addField('password')->addRule('length', [5], 'Password must be at least 5 characters');
+        $form2->addField('confirm_password')->addRule('equals', ['password'], 'Passwords does not match');
 
-        /* Validate form fields */
-        if (!$form->validate()) {
+        // If validation fails then render signup view with errors
+        if(!$form2->validate()) {
             $view = new View('signup.phtml');
 
-            $view->assign([
-                'topnavBg'  => '#ffffff',
-                'pageTitle' => 'CV Generator | Sign up',
-            ]);
-            $view->assign($form->getFieldValues());
-            $view->assign($form->getErrors());
+            $view->assign(['topnavBg'  => '#ffffff', 'pageTitle' => 'CV Generator | Sign up']);
+            $view->assign($form2->getFieldValues());
+            $view->assign($form2->getErrors());
             $view->render();
 
             return;
         }
 
-        /* Create new user and redirect to home page*/
+        // Create new user and redirect to home page
         $user = new User();
-        $user->setEmail($form->getValueOf('email'));
-        $user->setName($form->getValueOf('name'));
-        $user->setLastname($form->getValueOf('lastname'));
-        $user->setPassword(password_hash($form->getValueOf('password'), PASSWORD_DEFAULT));
+        $user->setEmail($form2->getFieldValue('email'));
+        $user->setName($form2->getFieldValue('name'));
+        $user->setLastname($form2->getFieldValue('lastname'));
+        $user->setPassword(password_hash($form2->getFieldValue('password'), PASSWORD_DEFAULT));
         $user->setBirthDate(new \DateTime());
 
         try {
@@ -155,6 +146,7 @@ class AuthController extends Controller {
             echo 'Databse error, try again later';
             //TODO database error
         }
+
     }
 
     public function logout() {
