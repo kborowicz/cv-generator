@@ -49,7 +49,7 @@ class AuthController extends Controller {
 
     public function processLogin() {
         //Create form
-        $form = new Form('POST');
+        $form = new Form('post');
         $loginField = $form->addField('email')->addRule('email');
         $passwordField = $form->addField('password');
         $form->addField(CSRF_TOKEN)->addRule('csrfToken', [$_SESSION[CSRF_TOKEN]]);
@@ -60,13 +60,8 @@ class AuthController extends Controller {
         $user = $usersRepo->findOneBy(['email' => $form->getFieldValue('email')]);
 
         // Add rest of fields rules
-        $loginField->addRule(function () use ($user) {
-            return $user != null;
-        }, 'Account does not exist');
-
-        $passwordField->addRule(function ($value) use ($user) {
-            return $user && password_verify($value, $user->getPassword());
-        }, 'incorrect password');
+        $loginField->addRule('paramsNotNull', [$user], 'Account does not exist');
+        $passwordField->addRule('password', [$user != null ? $user->getPassword() : null]);
 
         // Validate form fields
         if (!$form->validate()) {
@@ -85,21 +80,22 @@ class AuthController extends Controller {
     }
 
     public function processSignup() {
-        $entityManager = \App\App::getEntityManager();
-        $usersRepo = $entityManager->getRepository(User::class);
-
         // Create form
         $form = new Form('post');
         $form->addField('name')->addRule('required');
         $form->addField('lastname')->addRule('required');
-        $form->addField('email')->addRule('email')
-            ->addRule(function($value) use ($usersRepo) {
-                return $usersRepo->findOneBy(['email' => $value]) == null;
-            }, 'User with this email address already exists');
-
+        $form->addField('email')->addRule('email');
         $form->addField('password')->addRule('length', [5, 25], 'Password must have 5 - 25 characters');
         $form->addField('password_confirm')->addRule('equals', ['password'], 'Passwords must match');
         $form->addField(CSRF_TOKEN)->addRule('csrfToken', [$_SESSION[CSRF_TOKEN]]);
+
+        // Check if user exists in database
+        $entityManager = \App\App::getEntityManager();
+        $usersRepo = $entityManager->getRepository(User::class);
+        $user = $usersRepo->findOneBy(['email' => $form->getFieldValue('email')]);
+
+        // Add rest of fields rules
+        $form->getField('email')->addRule('paramsNull', [$user], 'User with this email address already exists');
 
         // If validation fails then render signup view with errors
         if(!$form->validate()) {
