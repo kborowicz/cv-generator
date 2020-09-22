@@ -6,7 +6,6 @@ use App\Core\View;
 use App\Core\Controller;
 use App\Model\Entity\User;
 use App\Service\Form\Form;
-use App\Service\Form2\Form as Form2;
 use Doctrine\ORM\ORMException;
 
 class AuthController extends Controller {
@@ -23,7 +22,6 @@ class AuthController extends Controller {
                 $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
             }
         }
-
     }
 
     public function login() {
@@ -44,42 +42,37 @@ class AuthController extends Controller {
         $this->view->render();
     }
 
+    private function setSessionVariables(int $userId) {
+        $_SESSION[USER_ID] = $userId;
+        $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
+    }
+
     public function processLogin() {
-        if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
-            $this->redirectTo('login');
-        }
-
-        /* Create form */
+        //Create form
         $form = new Form('POST');
-        $loginField = $form->addField('email')->notEmpty()->validEmail();
-        $passwordField = $form->addField('password')->notEmpty();
+        $loginField = $form->addField('email')->addRule('email');
+        $passwordField = $form->addField('password');
+        $form->addField(CSRF_TOKEN)->addRule('csrfToken', [$_SESSION[CSRF_TOKEN]]);
 
-        /* Get user data from database */
+        // Get user data from database
         $entityManager = \App\App::getEntityManager();
         $usersRepo = $entityManager->getRepository(User::class);
-        $user = $usersRepo->findOneBy(['email' => $form->getValueOf('email')]);
+        $user = $usersRepo->findOneBy(['email' => $form->getFieldValue('email')]);
 
-        /* Add rest of field constraints */
-        $loginField->addConstraint(function () use ($user) {
-            if (!$user) {
-                return 'Account does not exist';
-            }
-        });
+        // Add rest of fields rules
+        $loginField->addRule(function () use ($user) {
+            return $user != null;
+        }, 'Account does not exist');
 
-        $passwordField->addConstraint(function ($value) use ($user) {
-            if ($user && !password_verify($value, $user->getPassword())) {
-                return 'Incorrect password';
-            }
-        });
+        $passwordField->addRule(function ($value) use ($user) {
+            return $user && password_verify($value, $user->getPassword());
+        }, 'incorrect password');
 
-        /* Validate form fields */
+        // Validate form fields
         if (!$form->validate()) {
             $view = new View('login.phtml');
 
-            $view->assign([
-                'topnavBg'  => '#ffffff',
-                'pageTitle' => 'CV Generator | Log in',
-            ]);
+            $view->assign(['topnavBg'  => '#ffffff', 'pageTitle' => 'CV Generator | Log in']);
             $view->assign($form->getFieldValues());
             $view->assign($form->getErrors());
             $view->render();
@@ -87,40 +80,34 @@ class AuthController extends Controller {
             return;
         }
 
-        /* Set user session variables and redirect to home page */
-        $_SESSION[USER_ID] = $user->getId();
-        $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
-
+        $this->setSessionVariables($user->getId());
         $this->redirectTo('home');
     }
 
     public function processSignup() {
-        if (empty($_POST[CSRF_TOKEN]) || $_POST[CSRF_TOKEN] !== $_SESSION[CSRF_TOKEN]) {
-            $this->redirectTo('signup');
-        }
-
         $entityManager = \App\App::getEntityManager();
         $usersRepo = $entityManager->getRepository(User::class);
 
-        // Create form //TODO csrf token
-        $form2 = new Form2('post');
-        $form2->addField('name')->addRule('required');
-        $form2->addField('lastname')->addRule('required');
-        $form2->addField('email')->addRule('email')
+        // Create form
+        $form = new Form('post');
+        $form->addField('name')->addRule('required');
+        $form->addField('lastname')->addRule('required');
+        $form->addField('email')->addRule('email')
             ->addRule(function($value) use ($usersRepo) {
-                return $usersRepo->findOneBy(['email' => $value]) != null; //TODO coś tu nie działa
-            }, 'User with this email already exists');
+                return $usersRepo->findOneBy(['email' => $value]) == null;
+            }, 'User with this email address already exists');
 
-        $form2->addField('password')->addRule('length', [5], 'Password must be at least 5 characters');
-        $form2->addField('confirm_password')->addRule('equals', ['password'], 'Passwords does not match');
+        $form->addField('password')->addRule('length', [5, 25], 'Password must have 5 - 25 characters');
+        $form->addField('password_confirm')->addRule('equals', ['password'], 'Passwords must match');
+        $form->addField(CSRF_TOKEN)->addRule('csrfToken', [$_SESSION[CSRF_TOKEN]]);
 
         // If validation fails then render signup view with errors
-        if(!$form2->validate()) {
+        if(!$form->validate()) {
             $view = new View('signup.phtml');
 
             $view->assign(['topnavBg'  => '#ffffff', 'pageTitle' => 'CV Generator | Sign up']);
-            $view->assign($form2->getFieldValues());
-            $view->assign($form2->getErrors());
+            $view->assign($form->getFieldValues());
+            $view->assign($form->getErrors());
             $view->render();
 
             return;
@@ -128,25 +115,22 @@ class AuthController extends Controller {
 
         // Create new user and redirect to home page
         $user = new User();
-        $user->setEmail($form2->getFieldValue('email'));
-        $user->setName($form2->getFieldValue('name'));
-        $user->setLastname($form2->getFieldValue('lastname'));
-        $user->setPassword(password_hash($form2->getFieldValue('password'), PASSWORD_DEFAULT));
+        $user->setEmail($form->getFieldValue('email'));
+        $user->setName($form->getFieldValue('name'));
+        $user->setLastname($form->getFieldValue('lastname'));
+        $user->setPassword(password_hash($form->getFieldValue('password'), PASSWORD_DEFAULT));
         $user->setBirthDate(new \DateTime());
 
         try {
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $_SESSION[USER_ID] = $user->getId();
-            $_SESSION[CSRF_TOKEN] = bin2hex(random_bytes(32));
-
+            $this->setSessionVariables($user->getId());
             $this->redirectTo('home');
         } catch (ORMException $e) {
             echo 'Databse error, try again later';
             //TODO database error
         }
-
     }
 
     public function logout() {

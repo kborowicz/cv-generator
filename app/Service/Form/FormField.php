@@ -4,9 +4,9 @@ namespace App\Service\Form;
 
 class FormField {
 
-    private string $name;
+    protected string $name;
 
-    private array $constraints = [];
+    protected array $rules = [];
 
     public function __construct(string $name) {
         $this->name = $name;
@@ -16,57 +16,25 @@ class FormField {
         return $this->name;
     }
 
-    public function setName($name) {
-        $this->name = $name;
-
-        return $this;
+    public function getRules() {
+        return $this->rules;
     }
 
-    public function getConstraints() {
-        return $this->constraints;
-    }
+    public function addRule($rule, $params = null, ?string $message = null) {
+        if (!is_string($rule) && !is_callable($rule)) {
+            throw new \InvalidArgumentException();
+        }
 
-    public function addConstraint(callable $constraint) {
-        $this->constraints[] = $constraint;
+        if (is_string($params)) {
+            $message = $params;
+            $params = [];
+        }
 
-        return $this;
-    }
-
-    public function notEmpty(string $errorMessage = 'This field is required') {
-        $this->constraints[] = function ($value) use ($errorMessage) {
-            if (empty($value)) { return $errorMessage; }
-        };
-
-        return $this;
-    }
-
-    public function equalTo($toValue, string $errorMessage = 'Fields does not match') {
-        $this->constraints[] = function($value) use ($toValue, $errorMessage) {
-            if($value !== $toValue) { return $errorMessage; }
-        };
-
-        return $this;
-    }
-
-    public function filter($filter, string $errorMessage) {
-        $this->constraints[] = function ($value) use ($filter, $errorMessage) {
-            if (!filter_var($value, $filter)) { return $errorMessage; }
-        };
-
-        return $this;
-    }
-
-    public function validEmail(string $errorMessage= 'Invalid email adress') {
-        return $this->filter(FILTER_VALIDATE_EMAIL, $errorMessage);
-    }
-
-    public function validDate(string $format = 'd.m.Y', string $errorMessage = ' Invalid date format') {
-        $this->constraints[] = function ($value) use ($format, $errorMessage) {
-            $date = \DateTime::createFromFormat($format, $value);
-            if(!$date || !$date->format($format) === $value) {
-                return $errorMessage;
-            }
-        };
+        $this->rules[] = [
+            'rule'    => $rule,
+            'params'  => $params,
+            'message' => $message,
+        ];
 
         return $this;
     }

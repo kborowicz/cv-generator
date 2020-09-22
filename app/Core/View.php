@@ -61,7 +61,7 @@ class View {
         }
     }
 
-    public function asset(string $name) {
+    public function asset(string $name, bool $absolute = false) { //TODO $absolute
         $path = PUBLIC_DIR . $name;
 
         if(!file_exists($path)) {
@@ -79,14 +79,14 @@ class View {
         return $_SESSION[CSRF_TOKEN] ?? null;
     }
 
-    public function csrfInput() {
+    public function csrfInput(string $javascriptId = 'js-' . CSRF_TOKEN) {
         if(!isset($_SESSION[CSRF_TOKEN])) {
             return "<p style='color: red'>Undefined token</p>";
         }
 
-        return '<input type="hidden" name="' . CSRF_TOKEN . '" 
-            value="' . $_SESSION[CSRF_TOKEN] . '" 
-            id="js-'. CSRF_TOKEN .'"/>';
+        return '<input type="hidden" name="' . CSRF_TOKEN .
+            '" value="' . $_SESSION[CSRF_TOKEN] .
+            '" id="'. $javascriptId .'"/>';
     }
 
     public function __get($name) {
