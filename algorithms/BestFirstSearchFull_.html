@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFS full</title>
+</head>
+<body>
+    
+<script>
+    const pathCost = 2;
+
+    const nodes = {
+        A: { name: 'A', value: 20, children: ['B-2', 'C-2', 'D-2']},
+        B: { name: 'B', value: 14, children: ['G-2'] },
+        C: { name: 'C', value: 17, children: ['G-2', 'E-2'] },
+        D: { name: 'D', value: 15, children: ['E-2', 'E-2'] },
+        E: { name: 'E', value: 14, children: ['G-2', 'H-2', 'J-2'] },
+        F: { name: 'F', value: 13, children: [] },
+        G: { name: 'G', value: 13, children: ['I-2'] },
+        H: { name: 'H', value: 12, children: ['I-2', 'M-2', 'L-2', 'N-2'] },
+        I: { name: 'I', value: 11, children: ['K-2'] },
+        J: { name: 'J', value: 10, children: ['L-2'] },
+        K: { name: 'K', value: 10, children: ['M-2'] },
+        L: { name: 'L', value: 11, children: ['M-2', 'N-2'] },
+        M: { name: 'M', value: 9, children: ['P-2'] },
+        N: { name: 'N', value: 8, children: ['Q-2'] },
+        P: { name: 'P', value: 0, children: [] },
+        Q: { name: 'Q', value: 8, children: ['R-2'] },
+        R: { name: 'R', value: 0, children: [] }
+    };
+
+    // const nodes = {
+    //     A: { name: 'A', value: 0, children: ['B-5', 'C-5', 'D-6']},
+    //     B: { name: 'B', value: 5, children: ['E-4', 'F-4'] },
+    //     C: { name: 'C', value: 5, children: ['G-4', 'H-3'] },
+    //     D: { name: 'D', value: 6, children: ['I-6', 'J-7'] },
+    //     E: { name: 'E', value: 4, children: ['K-6', 'L-3'] },
+    //     F: { name: 'F', value: 4, children: ['L-1', 'M-4'] },
+    //     G: { name: 'G', value: 4, children: ['N-5'] },
+    //     H: { name: 'H', value: 3, children: ['O-2', 'P-3'] },
+    //     I: { name: 'I', value: 5, children: ['P-1', 'Q-1'] },
+    //     J: { name: 'J', value: 4, children: ['R-1'] },
+    //     K: { name: 'K', value: 2, children: ['S-1'] },
+    //     L: { name: 'L', value: 2, children: ['T-1'] },
+    //     M: { name: 'M', value: 2, children: [] },
+    //     N: { name: 'N', value: 3, children: [] },
+    //     O: { name: 'O', value: 2, children: [] },
+    //     P: { name: 'P', value: 2, children: ['U-2'] },
+    //     Q: { name: 'Q', value: 4, children: [] },
+    //     R: { name: 'R', value: 2, children: [] },
+    //     S: { name: 'S', value: 1, children: [] },
+    //     T: { name: 'T', value: 1, children: [] },
+    //     U: { name: 'U', value: 0, children: [] }
+    // };
+
+    Object.values(nodes).forEach(node => {
+        node.pathCosts = []
+
+        for(let i=0; i<node.children.length; i++) {
+            const [childNodeName, pathCost] = node.children[i].split('-');
+            const childNode = nodes[childNodeName];
+
+            if(!childNode) {
+                throw new Error(`Node with name '${node.children[i]}' is not defined`);
+            }
+
+            if(!pathCost) {
+                throw new Error('Path cost is not defined');
+            }
+
+            childNode.parentNodes = childNode.parentNodes || [];
+            childNode.parentNodes.push(node);
+            node.children[i] = childNode;
+            node.pathCosts[childNodeName] = pathCost;
+        };
+    });
+
+    const bestFisrtSearchFull = (initialState, finishState) => {
+        let open = [ initialState ];
+        const closed = [];
+
+        while(open.length > 0) {
+            const X = open.shift();
+
+            if(finishState.indexOf(X) != -1) {
+                closed.push(X);
+                break;
+            }
+
+            closed.push(X);
+
+            X.children.forEach(child => {
+                let currentParent;
+                let currentChild = child
+                let fullValue = child.value;
+
+                while(currentChild.parentNodes) {
+                    currentParent = closed.filter(value => currentChild.parentNodes.includes(value))[0];
+                    fullValue += +currentParent.pathCosts[currentChild.name];
+                    currentChild = currentParent;
+                }
+
+                child.fullValue = fullValue;
+            });
+
+            open = [...new Set(open.concat(X.children))];
+            open.sort((a, b) => a.fullValue - b.fullValue);
+
+            console.log('open: ' + open.map(state => state.name), 'closed: ' + closed.map(state => state.name));
+        }
+
+        console.log('open: ' + open.map(state => state.name), 'closed: ' + closed.map(state => state.name));
+    }
+
+    bestFisrtSearchFull(nodes['A'], [nodes['P'], nodes['R']]);
+</script>
+
+</body>
+</html>

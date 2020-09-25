@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFS full</title>
+</head>
+<body>
+    
+<script>
+    class UCS {
+
+        constructor() {
+            this.nodes = {
+                A: { children: ['B-5', 'C-5', 'D-6']},
+                B: { children: ['E-4', 'F-4'] },
+                C: { children: ['G-4', 'H-3'] },
+                D: { children: ['I-6', 'J-7'] },
+                E: { children: ['K-6', 'L-3'] },
+                F: { children: ['L-2', 'M-4'] },
+                G: { children: ['N-5'] },
+                H: { children: ['O-2', 'P-3'] },
+                I: { children: ['P-1', 'Q-1'] },
+                J: { children: ['R-1'] },
+                K: { children: ['S-1'] },
+                L: { children: ['T-2'] },
+                M: { children: [] },
+                N: { children: [] },
+                O: { children: [] },
+                P: { children: ['U-1'] },
+                Q: { children: [] },
+                R: { children: [] },
+                S: { children: [] },
+                T: { children: [] },
+                U: { children: [] }
+            };
+
+            this.buildTree();
+        }
+
+        buildTree() {
+            for(const [nodeName, node] of Object.entries(this.nodes)) {
+                node.name = nodeName;
+                node.pathCosts = [];
+                node.isRoot = function() { return typeof this.parentNodes === 'undefined'; }
+                node.getPathCostToChild = function(childNode) { return this.pathCosts[childNode.name]; }
+                node.getPathCostToParent = function(parentNode) { return parentNode.getPathCostToChild(this); }
+
+                node.children = node.children.map(child => {
+                    const [childNodeName, pathCost] = child.split('-');
+                    const childNode = this.nodes[childNodeName];
+
+                    if(!childNode) throw new Error(`Node with name '${childNodeName}' is not defined`);
+                    if(!pathCost) throw new Error('Path cost is not defined');
+
+                    childNode.parentNodes = childNode.parentNodes || [];
+                    childNode.parentNodes.push(node);
+                    node.pathCosts[childNodeName] = pathCost;
+
+                    return childNode;
+                });
+            }
+        }
+
+        getPathsCost(node) {
+            let pathCost = 0;
+
+            if(node.isRoot()) {
+                return pathCost;
+            }
+
+            while(!node.isRoot()) {
+                const parentNode = node.parentNodes[0];
+                pathCost += +node.getPathCostToParent(parentNode);
+                node = parentNode;
+            }
+
+            return pathCost;
+        }
+
+        getLowestPathCost(node) {
+            if(node.isRoot()) {
+                return 0;
+            }
+
+            const firstPath = [ node ];
+            const paths = [ firstPath ];
+            
+            const getPaths = (path, paths) => {
+                const lastNode = path[path.length - 1];
+
+                if(lastNode.isRoot()) {
+                    return;
+                }
+
+                const parentNodes = lastNode.parentNodes;
+
+                if(parentNodes.length == 1) {
+                    path.push(parentNodes[0]);
+                    getPaths(path, paths);
+                } else {
+                    paths.splice(paths.indexOf(path), 1);
+                    parentNodes.forEach(parentNode => {
+                        const newPath = [...path, parentNode];
+                        paths.push(newPath);
+                        getPaths(newPath, paths);
+                    });
+                }
+            }
+
+            const getPathCost = (path) => {
+                let pathCost = 0;
+
+                for (let i = 0; i < path.length - 1; i++) {
+                    pathCost += +path[i].getPathCostToParent(path[i+1]);
+                }
+
+                return pathCost;
+            }
+
+            getPaths(firstPath, paths);
+            const pathCosts = paths.map(path => getPathCost(path));
+            pathCosts.sort((a, b) => a - b);
+
+            return pathCosts[0];
+        }
+
+        run(start, finish) {
+            let open = [ this.nodes[start] ]
+            let closed = [];
+            let finishNodes = Array.isArray(finish) ? 
+                finish.map(el => this.nodes[el]) : [ this.nodes[finish] ];
+
+            while(open.length != 0) {
+                let index = 0;
+                
+                while(closed.indexOf(open[index]) != -1) {
+                    index++;
+                }
+
+                const X = open.splice(index, 1)[0];
+                closed.push(X);
+
+                if(finishNodes.indexOf(X) != -1) {
+                    console.log('open: ' + open.map(state => state.name), 'closed: ' + closed.map(state => state.name));
+                    return;
+                }
+
+                X.children.forEach(child => {
+                    child.cost = this.getPathsCost(child);
+                    child.cost = this.getLowestPathCost(child);
+                });
+
+                open = [...new Set(open.concat(X.children))];
+                open.sort((a, b) => a.cost - b.cost);
+
+                console.log('open: ' + open.map(state => state.name), 'closed: ' + closed.map(state => state.name));
+            }
+        }
+
+    }
+
+    const ucs = new UCS();
+    ucs.run('A', 'U');
+</script>
+
+</body>
+</html>

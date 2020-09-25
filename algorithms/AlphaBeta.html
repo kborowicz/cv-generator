@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha beta</title>
+</head>
+<body>
+    
+<script>
+    class AlphaBeta {
+
+        constructor() {
+            this.nodes = {
+                A1: { value: 0, children: ['B1', 'B2'] },
+
+                B1: { value: 0, children: ['C1', 'C2'] },
+                B2: { value: 0, children: ['C3', 'C4'] },
+
+                C1: { value: 0, children: ['D1', 'D2'] },
+                C2: { value: 0, children: ['D3', 'D4'] },
+                C3: { value: 0, children: ['D5', 'D6'] },
+                C4: { value: 0, children: ['D7', 'D8'] },
+
+                D1: { value: 0, children: ['E1', 'E2'] },
+                D2: { value: 0, children: ['E3', 'E4'] },
+                D3: { value: 0, children: ['E5', 'E6'] },
+                D4: { value: 0, children: ['E7', 'E8'] },
+                D5: { value: 0, children: ['E9', 'E10'] },
+                D6: { value: 0, children: ['E11', 'E12'] },
+                D7: { value: 0, children: ['E13', 'E14'] },
+                D8: { value: 0, children: ['E15', 'E16'] },
+
+                E1: { value: 3, children: [] },
+                E2: { value: 5, children: [] },
+                E3: { value: 16, children: [] },
+                E4: { value: 27, children: [] },
+                E5: { value: 30, children: [] },
+                E6: { value: 17, children: [] },
+                E7: { value: 4, children: [] },
+                E8: { value: 2, children: [] },
+                E9: { value: 15, children: [] },
+                E10: { value: 1, children: [] },
+                E11: { value: 9, children: [] },
+                E12: { value: 19, children: [] },
+                E13: { value: 15, children: [] },
+                E14: { value: 22, children: [] },
+                E15: { value: 26, children: [] },
+                E16: { value: 11, children: [] },
+            };
+
+            this.buildTree();
+        }
+
+        buildTree() {
+            for(const [name, node] of Object.entries(this.nodes)) {
+                node.name = name;
+                node.children = node.children.map(child => this.nodes[child]);
+            }
+        }
+
+        getAllCombinations() {
+            const lastNodes = Object.values(this.nodes).filter(node => node.children.length == 0);
+
+            const getCombinations = (data) => {
+                let combinations1;
+                let combinations2;
+
+                if(data.length >= 2) {
+                    const halfLength = data.length / 2.0;
+                    const arr1 = data.slice(0, halfLength);
+                    const arr2 = data.slice(halfLength);
+
+                    combinations1 = getCombinations(arr1);
+                    combinations2 = getCombinations(arr2);
+                } else {
+                    return [data[0].value];
+                }
+
+                const combinations = [];
+
+                if(Array.isArray(combinations1[0]) && Array.isArray(combinations2[0])) {
+                    combinations1.forEach(comb1 => {
+                        combinations2.forEach(comb2 => {
+                            combinations.push(comb1.concat(comb2));
+                        });
+                    });
+
+                    combinations2.forEach(comb2 => {
+                        combinations1.forEach(comb1 => {
+                            combinations.push(comb2.concat(comb1));
+                        });
+                    });
+                } else {
+                    combinations.push(combinations1.concat(combinations2));
+                    combinations.push(combinations2.concat(combinations1));
+                }
+
+                return combinations;
+            };
+
+            return getCombinations(lastNodes);
+        }
+
+        run(start, depth) {
+            let hasCuttofs = false;
+
+            const alfabeta = (node, depth, alpha, beta, maximize) => {
+                if(depth == 0 || node.children.length == 0) {
+                    return node.value;
+                }
+
+                node.value = null;
+
+                if(maximize) {
+                    let newAlpha = alpha;
+                    let cutIndex = node.children.length;
+
+                    for (let i = 0; i < node.children.length; i++) {
+                        const child = node.children[i];
+                        const childValue = alfabeta(child, depth - 1, newAlpha, beta, false);
+
+                        newAlpha = Math.max(newAlpha, childValue);
+
+                        if(newAlpha >= beta && i < node.children.length - 1) {
+                            node.value = (node.children[i - 1] || child).value;
+                            cutIndex = i;
+                            hasCuttofs = true;
+                            break;
+                        }
+                    }
+                    
+                    if(!node.value) {
+                        const sortedChildren = node.children.slice(0, cutIndex).sort((a, b) => b.value - a.value);
+                        node.value = sortedChildren[0].value;
+                    }
+
+                    node.alpha = newAlpha;
+                    node.beta = beta;
+
+                    return node.value;
+                } else {
+                    let newBeta = beta;
+                    let cutIndex = node.children.length;
+
+                    for (let i = 0; i < node.children.length; i++) {
+                        const child = node.children[i];
+                        const childValue = alfabeta(child, depth - 1, alpha, newBeta, true);
+
+                        newBeta = Math.min(newBeta, childValue);
+
+                        if(alpha >= newBeta && i < node.children.length - 1) {
+                            node.value = (node.children[i - 1] || child).value;
+                            cutIndex = i;
+                            hasCuttofs = true;
+                            break;
+                        }
+                    }
+                    
+                    if(!node.value) {
+                        const sortedChildren = node.children.slice(0, cutIndex).sort((a, b) => a.value - b.value);
+                        node.value = sortedChildren[0].value;
+                    }
+
+                    node.alpha = alpha;
+                    node.beta = newBeta;
+
+                    return node.value;
+                }
+            }
+
+            alfabeta(this.nodes[start], depth, -Infinity, Infinity, true);
+
+            return hasCuttofs;
+        }
+
+        findNoCutoffState(start, depth) {
+            const combinations = this.getAllCombinations();
+            const lastNodes = Object.values(this.nodes).filter(node => node.children.length == 0);
+
+            for (let i = 0; i < combinations.length; i++) {
+                const combination = combinations[i];
+                for (let j = 0; j < combination.length; j++) {
+                    lastNodes[j].value = combination[j];
+                }
+                
+                if(!this.run(start, depth)) {
+                    return {
+                        combination: combination,
+                        nodes: this.nodes
+                    }
+                }
+            }
+
+            return 'No states found';
+        }
+
+    }
+
+    const alphaBeta = new AlphaBeta();
+    //console.log(alphaBeta.run('A1', 4)); console.log(alphaBeta.nodes);
+    console.log(alphaBeta.findNoCutoffState('A1', 4));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hopfield</title>
+</head>
+<body>
+
+<script type="module">
+    class Hopfield {
+
+        constructor() {
+            this.graphPaths = [
+                [0, 1, 1, -1],      //x1
+                [1, 0, 1, -1],      //x2
+                [1, 1, 0, -1],      //x3
+                [-1, -1, -1, 0]     //x4
+            ]
+
+            this.states = [];
+            this.hashedStates = [];
+
+            const variableCount = Object.keys(this.graphPaths).length;
+            const statesCount = Math.pow(2, variableCount);
+
+            for (let i = 0; i < statesCount; i++) {
+                const binaryString = i.toString(2).padStart(variableCount, '0');
+                this.states.push(binaryString.split('').map(s => +s));
+                this.hashedStates.push(binaryString);
+            }
+        }
+
+        runAsync() {
+            this.states.forEach((stateBits, index) => {
+                const stateAfterActivation = [];
+
+                for (let i = 0; i < this.graphPaths.length; i++) {
+                    const graphPathValues = this.graphPaths[i];
+                    let bit = 0;
+
+                    for (let j = 0; j < graphPathValues.length; j++) {
+                        bit += graphPathValues[j] * stateBits[j]; 
+                    }
+
+                    bit = bit >= 0 ? 1 : 0;
+
+                    const newState = [...stateBits];
+                    newState[i] = bit;
+
+                    stateAfterActivation.push(this.hashedStates.indexOf(newState.join('')))
+                }
+
+                console.log(index + ': [' + stateAfterActivation.join(', ') + ']');
+            });
+        }
+
+    }
+
+    const hopfield = new Hopfield();
+    hopfield.runAsync();
+</script>
+
+</body>
+</html>

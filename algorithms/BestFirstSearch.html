@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best First Search</title>
+</head>
+<body>
+    
+<script>
+    class BestFirstSearch {
+
+        constructor() {
+            this.nodes = {
+                A: { value: 0, children: ['B', 'C', 'D']},
+                B: { value: 5, children: ['E', 'F'] },
+                C: { value: 5, children: ['G', 'H'] },
+                D: { value: 6, children: ['I', 'J'] },
+                E: { value: 4, children: ['K', 'L'] },
+                F: { value: 4, children: ['L', 'M'] },
+                G: { value: 4, children: ['N'] },
+                H: { value: 3, children: ['O', 'P'] },
+                I: { value: 0, children: ['P', 'Q'] },
+                J: { value: 0, children: ['R'] },
+                K: { value: 6, children: ['S'] },
+                L: { value: 3, children: ['T'] },
+                M: { value: 4, children: [] },
+                N: { value: 0, children: [] },
+                O: { value: 2, children: [] },
+                P: { value: 3, children: ['U'] },
+                Q: { value: 0, children: [] },
+                R: { value: 0, children: [] },
+                S: { value: 0, children: [] },
+                T: { value: 2, children: [] },
+                U: { value: 1, children: [] }
+            };
+
+            this.buildTree();
+        }
+
+        buildTree() {
+            for(const [nodeName, node] of Object.entries(this.nodes)) {
+                node.name = nodeName;
+                node.children = node.children.map(child => this.nodes[child]);
+            }
+        }
+
+        run(start, finish) {
+            let finishNodes = Array.isArray(finish) ? finish.map(el => this.nodes[el]) : [ this.nodes[finish] ];
+            let open = [ this.nodes[start] ];
+            let closed = [];
+
+            while(open.length > 0) {
+                const X = open.shift();
+                closed.push(X);
+
+                if(finishNodes.includes(X)) {
+                    break;
+                }
+
+                const children = X.children.filter(child => !closed.includes(child));
+                open = [...new Set(open.concat(children))];
+                open.sort((a, b) => a.value - b.value);
+
+                console.log('open: ' + open.map(state => state.name), 'closed: ' + closed.map(state => state.name));
+            }
+
+            console.log('open: ' + open.map(state => state.name), 'closed: ' + closed.map(state => state.name));
+        }
+
+    }
+
+    const bestFisrtSearch = new BestFirstSearch();
+    bestFisrtSearch.run('A', 'U');
+</script>
+
+</body>
+</html>
