@@ -8,26 +8,24 @@
 <body>
     
 <script>
-    const pathCost = 2;
-
     const nodes = {
-        A: { name: 'A', value: 20, children: ['B-2', 'C-2', 'D-2']},
-        B: { name: 'B', value: 14, children: ['G-2'] },
-        C: { name: 'C', value: 17, children: ['G-2', 'E-2'] },
-        D: { name: 'D', value: 15, children: ['E-2', 'E-2'] },
-        E: { name: 'E', value: 14, children: ['G-2', 'H-2', 'J-2'] },
-        F: { name: 'F', value: 13, children: [] },
-        G: { name: 'G', value: 13, children: ['I-2'] },
-        H: { name: 'H', value: 12, children: ['I-2', 'M-2', 'L-2', 'N-2'] },
-        I: { name: 'I', value: 11, children: ['K-2'] },
-        J: { name: 'J', value: 10, children: ['L-2'] },
-        K: { name: 'K', value: 10, children: ['M-2'] },
-        L: { name: 'L', value: 11, children: ['M-2', 'N-2'] },
-        M: { name: 'M', value: 9, children: ['P-2'] },
-        N: { name: 'N', value: 8, children: ['Q-2'] },
-        P: { name: 'P', value: 0, children: [] },
-        Q: { name: 'Q', value: 8, children: ['R-2'] },
-        R: { name: 'R', value: 0, children: [] }
+        A: { value: 20, children: ['B-2', 'C-2', 'D-2']},
+        B: { value: 14, children: ['G-2'] },
+        C: { value: 17, children: ['G-2', 'E-2'] },
+        D: { value: 15, children: ['E-2', 'E-2'] },
+        E: { value: 14, children: ['G-2', 'H-2', 'J-2'] },
+        F: { value: 13, children: [] },
+        G: { value: 13, children: ['I-2'] },
+        H: { value: 12, children: ['I-2', 'M-2', 'L-2', 'N-2'] },
+        I: { value: 11, children: ['K-2'] },
+        J: { value: 10, children: ['L-2'] },
+        K: { value: 10, children: ['M-2'] },
+        L: { value: 11, children: ['M-2', 'N-2'] },
+        M: { value: 9, children: ['P-2'] },
+        N: { value: 8, children: ['Q-2'] },
+        P: { value: 0, children: [] },
+        Q: { value: 8, children: ['R-2'] },
+        R: { value: 0, children: [] }
     };
 
     // const nodes = {

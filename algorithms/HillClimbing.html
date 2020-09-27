@@ -8,80 +8,80 @@
 <body>
     
 <script>
-class HillClimbing {
+    class HillClimbing {
 
-    constructor() {
-        this.nodes = {
-            A: { value: 6, children: ['B', 'C', 'D']},
-            B: { value: 5, children: ['E', 'F'] },
-            C: { value: 5, children: ['G', 'H'] },
-            D: { value: 6, children: ['I', 'J'] },
-            E: { value: 4, children: ['K', 'L'] },
-            F: { value: 4, children: ['L', 'M'] },
-            G: { value: 4, children: ['N'] },
-            H: { value: 3, children: ['O', 'P'] },
-            I: { value: 5, children: ['P', 'Q'] },
-            J: { value: 4, children: ['R'] },
-            K: { value: 6, children: ['S'] },
-            L: { value: 3, children: ['T'] },
-            M: { value: 4, children: [] },
-            N: { value: 6, children: [] },
-            O: { value: 2, children: [] },
-            P: { value: 3, children: ['U'] },
-            Q: { value: 6, children: [] },
-            R: { value: 2, children: [] },
-            S: { value: 6, children: [] },
-            T: { value: 2, children: [] },
-            U: { value: 0, children: [] }
-        };
+        constructor() {
+            this.nodes = {
+                A: { value: 6, children: ['B', 'C', 'D']},
+                B: { value: 5, children: ['E', 'F'] },
+                C: { value: 5, children: ['G', 'H'] },
+                D: { value: 6, children: ['I', 'J'] },
+                E: { value: 4, children: ['K', 'L'] },
+                F: { value: 4, children: ['L', 'M'] },
+                G: { value: 4, children: ['N'] },
+                H: { value: 3, children: ['O', 'P'] },
+                I: { value: 5, children: ['P', 'Q'] },
+                J: { value: 4, children: ['R'] },
+                K: { value: 6, children: ['S'] },
+                L: { value: 3, children: ['T'] },
+                M: { value: 4, children: [] },
+                N: { value: 6, children: [] },
+                O: { value: 2, children: [] },
+                P: { value: 3, children: ['U'] },
+                Q: { value: 6, children: [] },
+                R: { value: 2, children: [] },
+                S: { value: 6, children: [] },
+                T: { value: 2, children: [] },
+                U: { value: 0, children: [] }
+            };
 
-        this.buildTree();
-    }
-
-    buildTree() {
-        for(const [nodeName, node] of Object.entries(this.nodes)) {
-            node.name = nodeName;
-            node.children = node.children.map(child => this.nodes[child]);
+            this.buildTree();
         }
-    }
 
-    run(start, finish) {
-        let nextNode;
-        let currentNode = this.nodes[start];
-        let finishNodes = Array.isArray(finish) ? finish.map(el => this.nodes[el]) : [ this.nodes[finish] ];
-        const path = [ currentNode ];
-
-        while(true) {
-            const children = currentNode.children.sort((a, b) => a.value - b.value); // Sort ascending
-
-            if(children.length == 0) {
-                break;
+        buildTree() {
+            for(const [nodeName, node] of Object.entries(this.nodes)) {
+                node.name = nodeName;
+                node.children = node.children.map(child => this.nodes[child]);
             }
+        }
 
-            for (let i = 0; i < children.length; i++) {
-                if(finishNodes.includes(children[i])) {
-                    path.push(children[i]);
+        run(start, finish) {
+            let nextNode;
+            let currentNode = this.nodes[start];
+            let finishNodes = Array.isArray(finish) ? finish.map(el => this.nodes[el]) : [ this.nodes[finish] ];
+            const path = [ currentNode ];
+
+            while(true) {
+                const children = currentNode.children.sort((a, b) => a.value - b.value); // Sort ascending
+
+                if(children.length == 0) {
                     break;
+                }
+
+                for (let i = 0; i < children.length; i++) {
+                    if(finishNodes.includes(children[i])) {
+                        path.push(children[i]);
+                        break;
+                    }
+                }
+
+                nextNode = children[0];
+                path.push(nextNode);
+
+                if(nextNode.value > currentNode.value) {
+                    break;
+                } else {
+                    currentNode = nextNode;
                 }
             }
 
-            nextNode = children[0];
-            path.push(nextNode);
-
-            if(nextNode.value > currentNode.value) {
-                break;
-            } else {
-                currentNode = nextNode;
-            }
+            console.log('path: ' + path.map(el => el.name));
         }
 
-        console.log('path: ' + path.map(el => el.name));
     }
 
-}
-
-const hillClimbing = new HillClimbing();
-hillClimbing.run('A', 'U'); 
+    const hillClimbing = new HillClimbing();
+    hillClimbing.run('A', 'U'); 
 </script>
 
 </body>

@@ -209,23 +209,3 @@ class Form {
     }
 
 }
-
-BFS(initialState) {
-    open = [ initialState ];
-    closed = [];
-
-    while open != [] {
-        X = shift(open);
-        
-        if(X == {goal state}) {
-            return 'sucess';
-        }
-
-        closed.push(X);
-        children = X.getChildren();
-
-        open.push(children);
-        open.removeDuplicates();
-        open.sortAscending(); // Sort by heurestic value ascending
-    }
-}
