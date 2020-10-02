@@ -18,21 +18,6 @@ class Router {
         $this->routes = $routes;
     }
 
-    public function matches($url) {
-        foreach($this->routes->getAll() as $route) {
-            if($parameters = $route->matches($url)) {
-                $this->route = $route;
-                $this->parameters = array_filter($parameters, function($key) { 
-                    return is_string($key);
-                });
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function run($url) {
         if($this->matches($url)) {
             $requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
@@ -51,6 +36,21 @@ class Router {
             http_response_code(404);
             exit;
         }
+    }
+
+    private function matches($url) {
+        foreach($this->routes->getAll() as $route) {
+            if($parameters = $route->matches($url)) {
+                $this->route = $route;
+                $this->parameters = array_filter($parameters, function($key) { 
+                    return is_string($key);
+                });
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function processController($class, $action) {

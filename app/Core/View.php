@@ -33,16 +33,16 @@ class View {
         return isset($this->data[$property]) && null !== $this->data[$property];
     }
 
-    public function render($data = []) {
-        if(!empty($data)) {
+    public function render(array $data = null) {
+        if($data) {
             $this->assign($data);
         }
 
         include $this->file;
     }
 
-    public function renderToString($data = []) : string {
-        if(!empty($data)) {
+    public function renderToString(array $data = null) : string {
+        if($data) {
             $this->assign($data);
         }
 

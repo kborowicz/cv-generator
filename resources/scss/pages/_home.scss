@@ -162,7 +162,7 @@ $main-width: 650px;
         flex: 0 0 fill(3, 15px, 0);
     }
 
-    &__delete-icon {
+    %icon {
         @include flex;
 
         flex: none;
@@ -170,6 +170,16 @@ $main-width: 650px;
         height: 40px;
         cursor: pointer;
         font-size: 24px;
+    }
+
+    &__delete-icon, &__move-icon {
+        @extend %icon;
+        margin-right: 0;
+
+        :hover {
+            color: $color-secondary;
+            text-shadow: 0 0 15px $color-secondary;
+        }
     }
 
     &--right {

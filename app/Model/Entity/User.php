@@ -61,7 +61,7 @@ class User {
     protected $imageFile;
 
     /**
-     * @Column(type="string", nullable=true)
+     * @Column(type="string", nullable=true, length=1023)
      */
     protected $rodo;
 

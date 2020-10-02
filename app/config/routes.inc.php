@@ -26,7 +26,7 @@ $routes->add('logout', "logout/")
 $routes->add('home', "/")
 ->setMethod('ANY', HomeController::class, 'home');
 
-$routes->add('generate', "generate/{name}.{lastname}.{id}/")
+$routes->add('generate', "generate/{id}/")
 ->setMethod('GET', HomeController::class, 'generateCV');
 
 $routes->add('open-image', "image/{imageFile}/")

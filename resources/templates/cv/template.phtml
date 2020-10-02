@@ -11,7 +11,7 @@
             $path = IMAGES_DIR . $this->user->getImageFile();
             $src = ''; //TODO można dać jakiejs domyslne zdjecie
 
-            if(file_exists($path)) {
+            if(file_exists($path) && is_file($path)) {
                 $type = pathinfo($path)['extension'];
                 $data = file_get_contents($path);
                 $src = 'data:image/' . $type . ';base64,' . base64_encode($data);
@@ -45,32 +45,41 @@
         <div class="info-header" style="padding-left:10px; padding-top: 25px;">UMIEJĘTNOŚCI</div>
         <div id="skills" style="margin-top: 5px">
             <table>
-                <?php foreach ($this->user->getSkills() as $s) : ?>
+                <?php 
+                if(!empty($this->user->getSkills())) :
+                foreach ($this->user->getSkills() as $s) :
+                ?>
                     <tr>
                         <td class="skill-tick"><img src="img/tick.png"></td>
                         <td class="skill"><?=$s?></td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endforeach; endif; ?>
             </table>
         </div>
         <div class="info-header" style="padding-left:10px; padding-top: 25px;">ZAINTERESOWANIA</div>
         <div id="skills" style="margin-top: 5px">
             <table>
-                <?php foreach ($this->user->getInterests() as $i) : ?>
+                <?php 
+                if(!empty($this->user->getInterests())) :
+                foreach ($this->user->getInterests() as $i) : 
+                ?>
                     <tr>
                         <td class="skill-tick"><img src="img/tick.png"></td>
                         <td class="skill"><?=$i?></td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endforeach; endif; ?>
             </table>
         </div>
     </div>
     <div id="right">
         <div class="name"><?=$this->user->getFullName()?></div><br>
-        <div style="margin-top: 20px; font-size: 20px; font-family: lato-bold">PROJEKTY</div>
+        <div style="margin-top: 20px; font-size: 20px; font-family: lato-bold">HISTORIA ZATRUDNIENIA</div>
         <hr style="margin: 0; padding: 0; height: 0; border: none; border-top: 1px solid #000">
 
-        <?php foreach ($this->user->getEmploymentHistory() as $emp) : ?>
+        <?php 
+        if(!empty($this->user->getEmploymentHistory())) :
+        foreach ($this->user->getEmploymentHistory() as $emp) : 
+        ?>
             <br><div style="text-align: left; font-size: 13px; color: grey; font-family: lato-regular">
                 <?=$emp['period']?>
             </div>
@@ -80,13 +89,16 @@
             <div style="font-size: 13px; font-family: lato-regular">
                 <?=$emp['description']?>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
         <br>
 
         <div style="margin-top: 20px; font-size: 20px; font-family: lato-bold">WYKSZTAŁCENIE</div>
         <hr style="margin: 0; padding: 0; height: 0; border: none; border-top: 1px solid #000">
 
-        <?php foreach ($this->user->getEducationHistory() as $edu) : ?>
+        <?php 
+        if(!empty($this->user->getEducationHistory())) :
+        foreach ($this->user->getEducationHistory() as $edu) : 
+        ?>
             <br><div style="text-align: left; font-size: 13px; color: grey; font-family: lato-regular">
                 <?=$edu['period']?>
             </div>
@@ -96,7 +108,7 @@
             <div style="font-size: 13px; font-family: lato-regular">
                 <?=$edu['description']?>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
 
         <div style="position: absolute; bottom: 0; color: grey; font-size: 10px"><?=$this->user->getRodo()?></div>
     </div>

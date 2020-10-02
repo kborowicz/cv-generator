@@ -1,6 +1,6 @@
-import Toast from './components/toast.js';
 import anime from 'anime';
-import { id, el, on, ajax } from 'utils';
+import { ajax, el, id, on } from 'utils';
+import Toast from './components/toast.js';
 
 class App {
     constructor() {
@@ -110,6 +110,17 @@ class App {
         });
     }
 
+    moveUp(child) {
+        const parent = child.parentNode;
+        const childPos = Array.from(parent.children).indexOf(child);
+
+        if (childPos == 0) {
+            parent.insertBefore(child, parent.lastChild.nextSibling);
+        } else {
+            parent.insertBefore(child, child.previousSibling);
+        }
+    }
+
     addSkills() {
         let input;
 
@@ -123,7 +134,10 @@ class App {
                     this.skills.splice(this.skills.indexOf(input), 1);
                     this.skillsContainer.removeChild(row);
                 }
-            }, el('i.ic-x'))
+            }, el('i.ic-x')),
+            el('div.row__move-icon', {
+                onclick: () => this.moveUp(row)
+            }, el('i.ic-arrow-up'))
         ]);
 
         this.skills.push(input);
@@ -145,7 +159,10 @@ class App {
                     this.interests.splice(this.interests.indexOf(input), 1);
                     this.interestsContainer.removeChild(row);
                 }
-            }, el('i.ic-x'))
+            }, el('i.ic-x')),
+            el('div.row__move-icon', {
+                onclick: () => this.moveUp(row)
+            }, el('i.ic-arrow-up'))
         ]);
 
         this.interests.push(input);
@@ -181,7 +198,10 @@ class App {
                     this.employmentHistory.splice(this.employmentHistory.indexOf(inputs), 1);
                     this.employmentHistoryContainer.removeChild(row);
                 }
-            }, el('i.ic-x'))
+            }, el('i.ic-x')),
+            el('div.row__move-icon', {
+                onclick: () => this.moveUp(row)
+            }, el('i.ic-arrow-up'))
         ]);
 
         this.employmentHistory.push(inputs);
@@ -217,7 +237,10 @@ class App {
                     this.educationHistory.splice(this.educationHistory.indexOf(inputs), 1);
                     this.educationHistoryContainer.removeChild(row);
                 }
-            }, el('i.ic-x'))
+            }, el('i.ic-x')),
+            el('div.row__move-icon', {
+                onclick: () => this.moveUp(row)
+            }, el('i.ic-arrow-up'))
         ]);
 
         this.educationHistory.push(inputs);

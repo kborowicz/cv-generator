@@ -350,7 +350,7 @@ button:focus {
     flex: 0 0 calc(66.66666% - 5px); }
   .row--1-3 > * {
     flex: 0 0 calc(33.33333% - 10px); }
-  .row__delete-icon {
+  .row .row__delete-icon, .row .row__move-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -359,6 +359,11 @@ button:focus {
     height: 40px;
     cursor: pointer;
     font-size: 24px; }
+  .row__delete-icon, .row__move-icon {
+    margin-right: 0; }
+    .row__delete-icon :hover, .row__move-icon :hover {
+      color: #A362EA;
+      text-shadow: 0 0 15px #A362EA; }
   .row--right {
     justify-content: flex-end; }
   .row--history {
